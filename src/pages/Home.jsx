@@ -60,7 +60,7 @@ export default function Home() {
         <h3 style={{ marginTop: 0 }}>➕ Create New Bin</h3>
         <div className="add-bar" style={{ flexDirection: "column", gap: "8px" }}>
           <input
-            placeholder="Bin Name..."
+            placeholder="Bin Name"
             value={newBinName}
             onChange={(e) => setNewBinName(e.target.value)}
           />
