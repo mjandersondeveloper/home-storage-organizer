@@ -5,7 +5,7 @@ import App from "./App.jsx";
 import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <BrowserRouter>
+  <BrowserRouter basename="/home-storage-organizer">
     <App />
   </BrowserRouter>
 );

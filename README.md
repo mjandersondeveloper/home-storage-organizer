@@ -71,3 +71,25 @@ Stored data shape:
 
 - Uses Vite and React 19 with `react-router-dom` for navigation.
 - ESLint is configured; run `npm run lint` before commits.
+
+## Deployment (GitHub Pages)
+
+This project is already configured to deploy to GitHub Pages using the `gh-pages` package.
+
+- The `homepage` field in `package.json` is set to: `https://mjandersondeveloper.github.io/home-storage-organizer`
+- The following deploy scripts are configured in `package.json`:
+  - `predeploy`: `npm run build`
+  - `deploy`: `gh-pages -d dist`
+
+To publish the site to GitHub Pages, run:
+
+```bash
+npm run deploy
+```
+
+This command will build the app and push the production `dist` output to the `gh-pages` branch.
+
+Notes:
+- Ensure the `homepage` value matches your GitHub username and repository name.
+- If you change the repository name or owner, update the `homepage` field accordingly.
+- GitHub Pages may take a minute to publish the updated site after deployment.

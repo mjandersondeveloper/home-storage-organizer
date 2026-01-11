@@ -1,7 +1,7 @@
 {
   "name": "home-storage-organizer",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "homepage": "https://mjandersondeveloper.github.io/home-storage-organizer",
   "type": "module",
   "scripts": {
