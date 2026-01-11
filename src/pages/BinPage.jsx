@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getAllBins, saveAllBins } from "../api/binStorage";
 import Loading from "../components/Loading";
+import { QRCodeCanvas } from "qrcode.react";
+
 
 export default function BinPage() {
   const { binId } = useParams();
@@ -9,6 +11,7 @@ export default function BinPage() {
   const [bin, setBin] = useState(null);
   const [newItem, setNewItem] = useState("");
   const [loading, setLoading] = useState(true);
+  const binUrl = `${window.location.origin}/home-storage-organizer/bin/${binId}`;
 
   useEffect(() => { 
     async function fetchBins() {
@@ -71,6 +74,19 @@ export default function BinPage() {
     await saveAllBins(updatedBin);
   };
 
+  const downloadQrCode = () => {
+    const canvas = document.getElementById("bin-qr-code");
+    if (!canvas) return;
+
+    const pngUrl = canvas.toDataURL("image/png");
+
+    const link = document.createElement("a");
+    link.href = pngUrl;
+    link.download = `${bin.name}-qr.png`;
+    link.click();
+  };
+
+
   return (
     <div className="card">
       <div style={{ marginBottom: "12px" }}>
@@ -87,6 +103,43 @@ export default function BinPage() {
       </div>
       
       <h2 style={{ marginTop: 0 }}>{bin.name}</h2>
+
+      <div
+        style={{
+          textAlign: "center",
+          marginBottom: "20px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <QRCodeCanvas
+          id="bin-qr-code"
+          value={binUrl}
+          size={180}
+          bgColor="#171a21"
+          fgColor="#ffffff"
+          level="H"
+        />
+
+        <button
+          onClick={downloadQrCode}
+          style={{
+            marginTop: "10px",
+            padding: "10px 18px",
+            borderRadius: "14px",
+            border: "none",
+            background: "#4f7cff",
+            color: "white",
+            fontWeight: 600,
+            fontSize: "14px",
+            cursor: "pointer",
+            boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
+          }}
+        >
+          ⬇️ Download QR Code
+        </button>
+      </div>
 
       <ul className="item-list">
         {bin.items.map((item, index) => (
