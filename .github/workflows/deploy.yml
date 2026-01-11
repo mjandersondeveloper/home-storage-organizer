@@ -17,8 +17,11 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Pin npm to stable version (workaround for optional deps bug)
+        run: npm install -g npm@9.6.7
+
       - name: Install dependencies
-        run: npm install --force
+        run: npm ci
 
       - name: Build
         run: npm run build
