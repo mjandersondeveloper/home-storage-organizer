@@ -4,8 +4,8 @@ import BinPage from "./pages/BinPage";
 
 export default function App() {
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>📦 Home Storage Organizer 📦</h1>
+    <div className="app-container">
+      <h1 className="app-title">📦 Home Bin Organizer</h1>
 
       <Routes>
         <Route path="/" element={<Home />} />
