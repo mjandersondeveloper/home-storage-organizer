@@ -93,3 +93,22 @@ Notes:
 - Ensure the `homepage` value matches your GitHub username and repository name.
 - If you change the repository name or owner, update the `homepage` field accordingly.
 - GitHub Pages may take a minute to publish the updated site after deployment.
+
+## CI / Automated Deploys
+
+This repository includes a GitHub Actions workflow that builds and deploys the app to GitHub Pages on pushes to `main`.
+
+- Workflow file: `.github/workflows/deploy.yml`
+- Trigger: `push` to the `main` branch
+- What it does:
+  - Checks out code
+  - Installs Node (Node.js 20)
+  - Cleans `node_modules` and `package-lock.json`, then runs `npm install`
+  - Builds the app (`npm run build`)
+  - Deploys `./dist` to the `gh-pages` branch using `peaceiris/actions-gh-pages`
+
+To trigger a deploy, push commits to `main` (the workflow runs automatically). You can also run the local deploy with:
+
+```bash
+npm run deploy
+```

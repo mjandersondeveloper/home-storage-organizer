@@ -17,7 +17,7 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Clean lockfile & node_modules, then install (workaround)
+      - name: Clean lockfile & node_modules, then install dependencies
         run: |
           rm -rf node_modules package-lock.json
           npm install
