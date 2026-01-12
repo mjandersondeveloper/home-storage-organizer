@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { getAllBins, saveAllBins } from "../api/binStorage";
 import Loading from "../components/Loading";
 import { QRCodeCanvas } from "qrcode.react";
+import "./css/BinPage.css";
 
 
 export default function BinPage() {
@@ -28,50 +29,36 @@ export default function BinPage() {
 
   if (!bin) {
     return (
-      <div>
+      <div className="card">
         <p>Bin not found.</p>
-        <Link to="/"
-          style={{
-            color: "#4f7cff",
-            textDecoration: "none",
-            fontWeight: 600,
-          }}>🏠 Home</Link>
+        <Link to="/" className="home-link">🏠 Home</Link>
       </div>
     );
   }
 
+  const updateBin = async (updatedBin) => {
+    setBins(updatedBin);
+    setBin(updatedBin[binId]);
+    await saveAllBins(updatedBin);
+  };
+
   const addItem = async () => {
-    if (!newItem.trim()) return;
+    const text = newItem.trim();
+    if (!text) return;
 
     const updatedBin = {
       ...bins,
-      [binId]: {
-        ...bin,
-        items: [...bin.items, newItem]
-      }
+      [binId]: { ...bin, items: [...bin.items, text] },
     };
 
-    setBins(updatedBin);
-    setBin(updatedBin[binId]);
     setNewItem("");
-
-    await saveAllBins(updatedBin);
+    await updateBin(updatedBin);
   };
 
   const removeItem = async (index) => {
     const updatedItems = bin.items.filter((_, i) => i !== index);
-    const updatedBin = {
-      ...bins,
-      [binId]: {
-        ...bin,
-        items: updatedItems
-      }
-    }
-
-    setBins(updatedBin);
-    setBin(updatedBin[binId]);
-
-    await saveAllBins(updatedBin);
+    const updatedBin = { ...bins, [binId]: { ...bin, items: updatedItems } };
+    await updateBin(updatedBin);
   };
 
   const downloadQrCode = () => {
@@ -89,12 +76,7 @@ export default function BinPage() {
     const textTopSpacing = 25 * scale;
     const textHeight = 40 * scale;
 
-    const height =
-      qrSize +
-      padding * 2 +
-      dividerSpacing +
-      textTopSpacing +
-      textHeight;
+    const height = qrSize + padding * 2 + dividerSpacing + textTopSpacing + textHeight;
 
     const combinedCanvas = document.createElement("canvas");
     combinedCanvas.width = width;
@@ -144,11 +126,7 @@ export default function BinPage() {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
-    ctx.fillText(
-      bin.name,
-      width / 2,
-      dividerY + textTopSpacing + textHeight / 2
-    );
+    ctx.fillText(bin.name, width / 2, dividerY + textTopSpacing + textHeight / 2);
 
     // --- Export ---
     const pngUrl = combinedCanvas.toDataURL("image/png");
@@ -160,63 +138,34 @@ export default function BinPage() {
 
   return (
     <div className="card">
-      <div style={{ marginBottom: "12px" }}>
-        <Link
-          to="/"
-          style={{
-            color: "#4f7cff",
-            textDecoration: "none",
-            fontWeight: 600,
-          }}
-        >
-          🏠 Home
-        </Link>
+      <div className="back-link">
+        <Link to="/" className="home-link">🏠 Home</Link>
       </div>
-      
-      <h2 style={{ marginTop: 0 }}>{bin.name}</h2>
 
-      <div
-        style={{
-          textAlign: "center",
-          marginBottom: "20px",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        <QRCodeCanvas
-          id="bin-qr-code"
-          value={binUrl}
-          size={180}
-          bgColor="#171a21"
-          fgColor="#ffffff"
-          level="H"
-        />
+      <h2 className="bin-title">{bin.name}</h2>
 
-        <button
-          onClick={downloadQrCode}
-          style={{
-            marginTop: "10px",
-            padding: "10px 18px",
-            borderRadius: "14px",
-            border: "none",
-            background: "#4f7cff",
-            color: "white",
-            fontWeight: 600,
-            fontSize: "14px",
-            cursor: "pointer",
-            boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
-          }}
-        >
+      <div className="qr-area">
+        <div style={{ display: "none" }}>
+          <QRCodeCanvas
+            id="bin-qr-code"
+            value={binUrl}
+            size={180}
+            bgColor="#171a21"
+            fgColor="#ffffff"
+            level="H"
+          />
+        </div>
+
+        <button onClick={downloadQrCode} className="btn download-btn">
           ⬇️ Download QR Code
         </button>
       </div>
-
+      
       <ul className="item-list">
         {bin.items.map((item, index) => (
           <li key={index} className="item">
-            <span>{item}</span>
-            <button onClick={() => removeItem(index)}>Remove</button>
+            <span className="item-text">{item}</span>
+            <button className="remove-btn" onClick={() => removeItem(index)}>Remove</button>
           </li>
         ))}
       </ul>
@@ -227,12 +176,10 @@ export default function BinPage() {
           onChange={(e) => setNewItem(e.target.value)}
           placeholder="Add new item..."
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              addItem();
-            }
+            if (e.key === "Enter") addItem();
           }}
         />
-        <button onClick={addItem}>Add</button>
+        <button onClick={addItem} className="btn">Add</button>
       </div>
     </div>
   );

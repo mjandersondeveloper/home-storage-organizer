@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getAllBins, saveAllBins } from "../api/binStorage";
 import Loading from "../components/Loading";
+import "./css/Home.css";
 
 export default function Home() {
   const [bins, setBins] = useState({});
@@ -20,82 +21,71 @@ export default function Home() {
   }, []);
 
   if (loading) return <Loading />;
-  
+
   const binEntries = Object.entries(bins);
 
   const createBin = async () => {
-    // Validate both name and ID are provided
-    if (!newBinName.trim() || !newBinId.trim()) {
+    const name = newBinName.trim();
+    const id = newBinId.trim();
+    if (!name || !id) {
       alert("Please enter both a Bin Name and a Bin ID.");
       return;
     }
-
-    // Prevent duplicate IDs
-    if (bins[newBinId]) {
+    if (bins[id]) {
       alert("Bin ID already exists! Please choose another.");
       return;
     }
 
     const updatedBin = {
       ...bins,
-      [newBinId]: {
-        name: newBinName,
-        items: [],
-      },
+      [id]: { name, items: [] },
     };
 
     setBins(updatedBin);
     setNewBinName("");
     setNewBinId("");
-
     await saveAllBins(updatedBin);
   };
 
   return (
-    <div>
+    <div className="home-page">
       <h2>🗂️ All Bins</h2>
 
-      {/* Create New Bin Form */}
-      <div className="card" style={{ marginBottom: "20px" }}>
-        <h3 style={{ marginTop: 0 }}>➕ Create New Bin</h3>
-        <div className="add-bar" style={{ flexDirection: "column", gap: "8px" }}>
+      <div className="card create-card">
+        <h3 className="card-title">➕ Create New Bin</h3>
+        <div className="add-bar column">
           <input
             placeholder="Bin Name"
             value={newBinName}
             onChange={(e) => setNewBinName(e.target.value)}
+            className="input"
           />
           <input
             placeholder="Bin ID (must be unique)"
             value={newBinId}
             onChange={(e) => setNewBinId(e.target.value)}
+            className="input"
           />
-          <button onClick={createBin}>Create Bin</button>
+          <button onClick={createBin} className="btn">
+            Create Bin
+          </button>
         </div>
       </div>
 
-      {/* Existing bins */}
-      {binEntries.length === 0 && <p>No bins stored yet.</p>}
-
-      <ul style={{ listStyle: "none", padding: 0 }}>
-        {binEntries.map(([id, bin]) => (
-          <li key={id} style={{ marginBottom: "10px" }}>
-            <Link
-              to={`/bin/${id}`}
-              style={{
-                textDecoration: "none",
-                color: "#4f7cff",
-                fontWeight: 600,
-                display: "block",
-                padding: "12px",
-                borderRadius: "12px",
-                background: "#171a21",
-              }}
-            >
-              {bin.name} <span style={{ fontSize: "12px", color: "#999" }}>({id})</span>
-            </Link>
-          </li>
-        ))}
-      </ul>
+      {binEntries.length === 0 ? (
+        <p className="no-bins">No bins stored yet.</p>
+      ) : (
+        <ul className="bins-list">
+          {binEntries.map(([id, bin]) => (
+            <li key={id}>
+              <Link to={`/bin/${id}`} className="bin-link">
+                <span className="bin-name">{bin.name}</span>
+                <span className="bin-id">({id})</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
