@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getAllBins, saveAllBins } from "../api/binStorage";
 import Loading from "../components/Loading";
-import "./css/Home.css";
+import "./css/HomePage.css";
 
-export default function Home() {
+export default function HomePage() {
   const [bins, setBins] = useState({});
   const [newBinName, setNewBinName] = useState("");
   const [newBinId, setNewBinId] = useState("");

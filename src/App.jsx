@@ -1,5 +1,5 @@
-import { Routes, Route, Link } from "react-router-dom";
-import Home from "./pages/Home";
+import { Routes, Route, HashRouter } from "react-router-dom";
+import HomePage from "./pages/HomePage";
 import BinPage from "./pages/BinPage";
 
 export default function App() {
@@ -7,10 +7,12 @@ export default function App() {
     <div className="app-container">
       <h1 className="app-title">📦 Home Bin Organizer</h1>
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/bin/:binId" element={<BinPage />} />
-      </Routes>
+      <HashRouter>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/bin/:binId" element={<BinPage />} />
+        </Routes>
+      </HashRouter>
     </div>
   );
 }

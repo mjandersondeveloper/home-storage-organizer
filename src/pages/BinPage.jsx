@@ -12,7 +12,6 @@ export default function BinPage() {
   const [bin, setBin] = useState(null);
   const [newItem, setNewItem] = useState("");
   const [loading, setLoading] = useState(true);
-  const binUrl = `https://mjandersondeveloper.github.io/home-storage-organizer/bin/${binId}`;
 
   useEffect(() => { 
     async function fetchBins() {
@@ -35,6 +34,9 @@ export default function BinPage() {
       </div>
     );
   }
+
+  const getBinUrl = (binId) =>
+  `${window.location.origin}/home-storage-organizer/#/bin/${binId}`;
 
   const updateBin = async (updatedBin) => {
     setBins(updatedBin);
@@ -69,11 +71,12 @@ export default function BinPage() {
     const borderRadius = 20;
     const width = qrSize + padding * 2;
 
-    const dividerSpacing = 20;
-    const textTopSpacing = 25;
+    const dividerSpacing = 35;
+    const textTopSpacing = 80;
     const textHeight = 40;
+    const bottomPadding = 40;
 
-    const height = qrSize + padding * 2 + dividerSpacing + textTopSpacing + textHeight;
+    const height = qrSize + padding * 2 + dividerSpacing + textTopSpacing + textHeight + bottomPadding;
 
     const combinedCanvas = document.createElement("canvas");
     combinedCanvas.width = width;
@@ -114,12 +117,12 @@ export default function BinPage() {
     ctx.moveTo(padding + 20, dividerY);
     ctx.lineTo(width - padding - 20, dividerY);
     ctx.strokeStyle = "#e5e5e5";
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 5;
     ctx.stroke();
 
     // --- Bin name text ---
     ctx.fillStyle = "#000000";
-    ctx.font = `bold 30px Arial`;
+    ctx.font = `600 80px "Segoe UI Rounded", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
@@ -145,8 +148,8 @@ export default function BinPage() {
         <div style={{ display: "none" }}>
           <QRCodeCanvas
             id="bin-qr-code"
-            value={binUrl}
-            size={900}          // high resolution for scannability
+            value={getBinUrl(binId)}
+            size={400}          // high resolution for scannability
             bgColor="#ffffff"   // white background for scanning
             fgColor="#000000"   // black QR squares
             level="H"

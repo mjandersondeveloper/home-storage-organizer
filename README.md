@@ -35,7 +35,7 @@ Available scripts (from `package.json`):
   - `/bin/:binId` → Bin page (view/add/remove items)
 
 - Key pages/components:
-  - `src/pages/Home.jsx` — list bins, create a new bin (requires Name + unique ID)
+  - `src/pages/HomePage.jsx` — list bins, create a new bin (requires Name + unique ID)
   - `src/pages/BinPage.jsx` — view bin details, add/remove items
   - `src/components/Loading.jsx` — loading fallback used by pages
 
@@ -63,7 +63,7 @@ Stored data shape:
 - `index.html` — app entry
 - `src/main.jsx` — bootstraps React and `BrowserRouter`
 - `src/App.jsx` — routes and top-level UI
-- `src/pages/` — page-level components (`Home.jsx`, `BinPage.jsx`)
+- `src/pages/` — page-level components (`HomePage.jsx`, `BinPage.jsx`)
 - `src/components/` — shared components (e.g., `Loading.jsx`)
 - `src/api/binStorage.js` — persistence helpers
 
