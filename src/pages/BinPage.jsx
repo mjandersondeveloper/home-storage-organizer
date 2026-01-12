@@ -12,7 +12,7 @@ export default function BinPage() {
   const [bin, setBin] = useState(null);
   const [newItem, setNewItem] = useState("");
   const [loading, setLoading] = useState(true);
-  const binUrl = `${window.location.origin}/home-storage-organizer/bin/${binId}`;
+  const binUrl = `https://mjandersondeveloper.github.io/home-storage-organizer/bin/${binId}`;
 
   useEffect(() => { 
     async function fetchBins() {
@@ -63,18 +63,15 @@ export default function BinPage() {
 
   const downloadQrCode = () => {
     const qrCanvas = document.getElementById("bin-qr-code");
-    if (!qrCanvas || !bin?.name) return;
-
-    const scale = 1;
-    const qrSize = qrCanvas.width * scale;
+    const qrSize = qrCanvas.width;
 
     const padding = 24;
     const borderRadius = 20;
     const width = qrSize + padding * 2;
 
-    const dividerSpacing = 20 * scale;
-    const textTopSpacing = 25 * scale;
-    const textHeight = 40 * scale;
+    const dividerSpacing = 20;
+    const textTopSpacing = 25;
+    const textHeight = 40;
 
     const height = qrSize + padding * 2 + dividerSpacing + textTopSpacing + textHeight;
 
@@ -102,14 +99,14 @@ export default function BinPage() {
     // --- Background with rounded border ---
     ctx.fillStyle = "#ffffff";
     ctx.strokeStyle = "#dddddd";
-    ctx.lineWidth = 2 * scale;
+    ctx.lineWidth = 2;
 
     drawRoundedRect(0, 0, width, height, borderRadius);
     ctx.fill();
     ctx.stroke();
 
     // --- Draw QR ---
-    ctx.drawImage(qrCanvas, padding, padding, qrSize, qrSize);
+    ctx.drawImage(qrCanvas, padding, padding);
 
     // --- Divider line ---
     const dividerY = padding + qrSize + dividerSpacing;
@@ -117,12 +114,12 @@ export default function BinPage() {
     ctx.moveTo(padding + 20, dividerY);
     ctx.lineTo(width - padding - 20, dividerY);
     ctx.strokeStyle = "#e5e5e5";
-    ctx.lineWidth = 2 * scale;
+    ctx.lineWidth = 2;
     ctx.stroke();
 
     // --- Bin name text ---
     ctx.fillStyle = "#000000";
-    ctx.font = `bold ${30 * scale}px Arial`;
+    ctx.font = `bold 30px Arial`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
@@ -149,9 +146,9 @@ export default function BinPage() {
           <QRCodeCanvas
             id="bin-qr-code"
             value={binUrl}
-            size={180}
-            bgColor="#171a21"
-            fgColor="#ffffff"
+            size={900}          // high resolution for scannability
+            bgColor="#ffffff"   // white background for scanning
+            fgColor="#000000"   // black QR squares
             level="H"
           />
         </div>
