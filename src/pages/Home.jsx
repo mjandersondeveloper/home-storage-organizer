@@ -36,7 +36,7 @@ export default function Home() {
       return;
     }
 
-    const updated = {
+    const updatedBin = {
       ...bins,
       [newBinId]: {
         name: newBinName,
@@ -44,11 +44,11 @@ export default function Home() {
       },
     };
 
-    setBins(updated);
+    setBins(updatedBin);
     setNewBinName("");
     setNewBinId("");
 
-    await saveAllBins(updated);
+    await saveAllBins(updatedBin);
   };
 
   return (
