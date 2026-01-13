@@ -23,16 +23,33 @@ export default function HomePage() {
   }, []);
 
   if (loading) return <Loading />;
-
-  const binEntries = Object.entries(bins);
-  const filteredBinEntries = binEntries.filter(([id, bin]) => {
+ 
+ const filteredBinsWithMatches = Object.entries(bins)
+  .map(([id, bin]) => {
     const term = searchTerm.toLowerCase();
-    return (
+
+    // All items that match the search
+    const allMatchingItems = bin.items.filter((item) =>
+      item.toLowerCase().includes(term)
+    );
+
+    // Show only first 5 matching items
+    const matchingItems = allMatchingItems.slice(0, 5);
+
+    // Number of additional matching items
+    const extraMatchesCount = allMatchingItems.length - matchingItems.length;
+
+    // Determine if bin matches at all
+    const binMatchesSearch =
       id.toLowerCase().includes(term) ||
       bin.name.toLowerCase().includes(term) ||
-      bin.items.some(item => item.toLowerCase().includes(term))
-    );
-  });
+      matchingItems.length > 0;
+
+    if (!binMatchesSearch) return null;
+
+    return { id, bin, matchingItems, extraMatchesCount };
+  })
+  .filter(Boolean);
 
   const createBin = async () => {
     const name = newBinName.trim();
@@ -99,18 +116,33 @@ export default function HomePage() {
         )}
       </div>
 
-      {filteredBinEntries.length === 0 ? (
+      {filteredBinsWithMatches.length === 0 ? (
         <p className="no-bins">
           {searchTerm ? "No matching results!" : "No bins stored yet!"}
         </p>
       ) : (
         <ul className="bins-list">
-          {filteredBinEntries.map(([id, bin]) => (
-            <li key={id}>
+          {filteredBinsWithMatches.map(({ id, bin, matchingItems, extraMatchesCount }) => (
+            <li key={id} className="bin-preview">
               <Link to={`/bin/${id}`} className="bin-link">
                 <span className="bin-name">{bin.name}</span>
                 <span className="bin-id">({id})</span>
               </Link>
+
+              {searchTerm && matchingItems.length > 0 && (
+                <div className="matching-items-card">
+                  <ul className="matching-items-preview">
+                    {matchingItems.map((item, index) => (
+                      <li key={index} className="matching-item-preview">
+                        {item}
+                      </li>
+                    ))}
+                    {extraMatchesCount > 0 && (
+                      <li className="matching-item-preview">+{extraMatchesCount} more...</li>
+                    )}
+                  </ul>
+                </div>
+              )}
             </li>
           ))}
         </ul>

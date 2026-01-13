@@ -60,3 +60,33 @@
 .search-input:focus {
   transform: translateY(-1px);
 }
+
+.matching-items-card {
+  background-color: #171a21; /* same as your bin background */
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin: 6px 0 12px 0; /* some space between bin and card */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); /* subtle depth */
+  border: 1px solid #2e2e2e; /* subtle border for separation */
+}
+
+.matching-items-preview {
+  display: flex;
+  flex-direction: column; /* vertical list */
+  gap: 4px;
+  margin: 0;
+  padding-left: 12px; /* indent items for readability */
+  list-style: disc; /* small bullets */
+}
+
+.matching-item-preview {
+  font-size: 0.85rem;
+  color: #ccc;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.matching-item-preview:hover {
+  color: #fff;
+}

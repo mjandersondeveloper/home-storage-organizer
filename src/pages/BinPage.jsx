@@ -184,7 +184,9 @@ export default function BinPage() {
       </div>
 
       {filteredItems.length === 0 ? (
-        <p className="no-items">No matching results!</p>
+        <p className="no-items">
+          {searchTerm ? "No matching results!" : "No items in this bin yet!"}
+        </p>
       ) : (
         <ul className="item-list">
           {filteredItems.map((item, index) => (
