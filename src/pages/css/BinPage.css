@@ -84,3 +84,7 @@
   cursor: pointer;
   font-weight: 600;
 }
+
+.no-items {
+  color: #bbb;
+}

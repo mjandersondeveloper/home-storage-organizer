@@ -3,12 +3,14 @@ import { Link } from "react-router-dom";
 import { getAllBins, saveAllBins } from "../api/binStorage";
 import Loading from "../components/Loading";
 import "./css/HomePage.css";
+import "./css/SearchBar.css";
 
 export default function HomePage() {
   const [bins, setBins] = useState({});
   const [newBinName, setNewBinName] = useState("");
   const [newBinId, setNewBinId] = useState("");
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     async function load() {
@@ -23,6 +25,14 @@ export default function HomePage() {
   if (loading) return <Loading />;
 
   const binEntries = Object.entries(bins);
+  const filteredBinEntries = binEntries.filter(([id, bin]) => {
+    const term = searchTerm.toLowerCase();
+    return (
+      id.toLowerCase().includes(term) ||
+      bin.name.toLowerCase().includes(term) ||
+      bin.items.some(item => item.toLowerCase().includes(term))
+    );
+  });
 
   const createBin = async () => {
     const name = newBinName.trim();
@@ -72,11 +82,30 @@ export default function HomePage() {
         </div>
       </div>
 
-      {binEntries.length === 0 ? (
-        <p className="no-bins">No bins stored yet.</p>
+      <div className="search-bar">
+        <span className="search-icon">🔍</span>
+
+        <input
+          className="search-input"
+          placeholder="Search bins and items..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+
+        {searchTerm && (
+          <button className="clear-btn" onClick={() => setSearchTerm("")}>
+            ✕
+          </button>
+        )}
+      </div>
+
+      {filteredBinEntries.length === 0 ? (
+        <p className="no-bins">
+          {searchTerm ? "No matching results!" : "No bins stored yet!"}
+        </p>
       ) : (
         <ul className="bins-list">
-          {binEntries.map(([id, bin]) => (
+          {filteredBinEntries.map(([id, bin]) => (
             <li key={id}>
               <Link to={`/bin/${id}`} className="bin-link">
                 <span className="bin-name">{bin.name}</span>
