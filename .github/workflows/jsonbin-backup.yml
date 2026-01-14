@@ -2,9 +2,8 @@ name: JSONBin Backup
 
 on:
   schedule:
-    - cron: "*/1 * * * *"
-    # - cron: "0 */6 * * *"  # Every 6 hours
-  workflow_dispatch:       # Allows manual run
+    - cron: "* * * * *"
+  workflow_dispatch:
 
 jobs:
   backup:
