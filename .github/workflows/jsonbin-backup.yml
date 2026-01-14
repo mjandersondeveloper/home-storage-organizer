@@ -1,0 +1,59 @@
+name: JSONBin Backup
+
+on:
+  # schedule:
+    # - cron: "*/5 * * * *"  # Every 5 minutes
+    # - cron: "0 */6 * * *"  # Every 6 hours
+  workflow_dispatch:       # Allows manual run
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout backups branch
+        uses: actions/checkout@v4
+        with:
+          ref: backups
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Fetch JSONBin and compare
+        env:
+          JSONBIN_API_KEY: ${{ secrets.JSONBIN_API_KEY }}
+          BIN_ID: 6963224d43b1c97be927fbb8
+        run: |
+          mkdir -p snapshots
+
+          # Fetch latest data
+          curl -s \
+            -H "X-Master-Key: $JSONBIN_API_KEY" \
+            https://api.jsonbin.io/v3/b/$BIN_ID/latest \
+            | jq '.record' > latest.json
+
+          # Ensure not empty
+          if [ ! -s latest.json ] || [ "$(cat latest.json)" = "{}" ]; then
+            echo "Empty data. Skipping."
+            exit 0
+          fi
+
+          # Compare with previous snapshot
+          if [ -f last.json ] && cmp -s latest.json last.json; then
+            echo "No changes detected."
+            exit 0
+          fi
+
+          # Save snapshot
+          TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
+          cp latest.json "snapshots/bins-$TIMESTAMP.json"
+          cp latest.json last.json
+
+          git config user.name "jsonbin-backup-bot"
+          git config user.email "backup@github-actions"
+          git add .
+          git commit -m "Backup: $TIMESTAMP"
+          git push
