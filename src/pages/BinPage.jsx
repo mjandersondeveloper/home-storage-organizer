@@ -4,7 +4,7 @@ import { getAllBins, saveAllBins } from "../api/binStorage";
 import Loading from "../components/Loading";
 import { QRCodeCanvas } from "qrcode.react";
 import "./css/BinPage.css";
-
+import "./css/SearchBar.css";
 
 export default function BinPage() {
   const { binId } = useParams();
@@ -12,6 +12,7 @@ export default function BinPage() {
   const [bin, setBin] = useState(null);
   const [newItem, setNewItem] = useState("");
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => { 
     async function fetchBins() {
@@ -62,6 +63,10 @@ export default function BinPage() {
     const updatedBin = { ...bins, [binId]: { ...bin, items: updatedItems } };
     await updateBin(updatedBin);
   };
+
+  const filteredItems = bin.items.filter((item) =>
+    item.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const downloadQrCode = () => {
     const qrCanvas = document.getElementById("bin-qr-code");
@@ -160,15 +165,38 @@ export default function BinPage() {
           ⬇️ Download QR Code
         </button>
       </div>
-      
-      <ul className="item-list">
-        {bin.items.map((item, index) => (
-          <li key={index} className="item">
-            <span className="item-text">{item}</span>
-            <button className="remove-btn" onClick={() => removeItem(index)}>Remove</button>
-          </li>
-        ))}
-      </ul>
+
+      <div className="search-bar">
+        <span className="search-icon">🔍</span>
+
+        <input
+          className="search-input"
+          placeholder="Search items..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+
+        {searchTerm && (
+          <button className="clear-btn" onClick={() => setSearchTerm("")}>
+            ✕
+          </button>
+        )}
+      </div>
+
+      {filteredItems.length === 0 ? (
+        <p className="no-items">
+          {searchTerm ? "No matching results!" : "No items in this bin yet!"}
+        </p>
+      ) : (
+        <ul className="item-list">
+          {filteredItems.map((item, index) => (
+            <li key={index} className="item">
+              <span className="item-text">{item}</span>
+              <button className="remove-btn" onClick={() => removeItem(index)}>Remove</button>
+            </li>
+          ))}
+        </ul>
+      )}
 
       <div className="add-bar">
         <input
