@@ -1,7 +1,7 @@
 {
   "name": "home-storage-organizer",
   "private": true,
-  "version": "1.1.0",
+  "version": "1.2.0",
   "homepage": "https://mjandersondeveloper.github.io/home-storage-organizer",
   "type": "module",
   "scripts": {
@@ -13,6 +13,9 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "file-saver": "^2.0.5",
+    "jszip": "^3.10.1",
+    "qrcode": "^1.5.4",
     "qrcode.react": "^4.2.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
