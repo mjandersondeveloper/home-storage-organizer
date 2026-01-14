@@ -10,16 +10,14 @@ export async function downloadSingleQRAsPDF(label, url) {
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
 
-  // Fit nicely on page with margins
-  const margin = 60;
-  const maxWidth = pageWidth - margin * 2;
-
+  const targetWidth = 360;
   const aspect = canvas.height / canvas.width;
-  const renderWidth = maxWidth;
+
+  const renderWidth = Math.min(targetWidth, pageWidth - 120);
   const renderHeight = renderWidth * aspect;
 
-  const x = margin;
-  const y = (pageHeight - renderHeight) / 2; // vertically centered
+  const x = (pageWidth - renderWidth) / 2;
+  const y = (pageHeight - renderHeight) / 2;
 
   pdf.addImage(imgData, "PNG", x, y, renderWidth, renderHeight);
 
@@ -33,32 +31,60 @@ export async function downloadQRCodesAsPDF(bins) {
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
 
-  const margin = 40;
-  const gap = 20;
+  const targetWidth = 360;
 
-  // How large each QR appears on the printed page
-  const targetWidth = 240; // good size for cutting + scanning
+  let first = true;
+
+  for (const [id, bin] of Object.entries(bins)) {
+    if (!first) pdf.addPage();
+    first = false;
+
+    const url = `${window.location.origin}/home-storage-organizer/#/bin/${id}`;
+    const canvas = await generateStyledQrCanvas(bin.name, url);
+    const imgData = canvas.toDataURL("image/png");
+
+    const aspect = canvas.height / canvas.width;
+    const renderWidth = Math.min(targetWidth, pageWidth - 120);
+    const renderHeight = renderWidth * aspect;
+
+    const x = (pageWidth - renderWidth) / 2;
+    const y = (pageHeight - renderHeight) / 2;
+
+    pdf.addImage(imgData, "PNG", x, y, renderWidth, renderHeight);
+  }
+
+  pdf.save("bin-qr-codes.pdf");
+}
+
+export async function downloadQRCodesAsPDFGrid(bins) {
+  const pdf = new jsPDF("portrait", "pt", "letter");
+
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+
+  const margin = 50;
+  const gap = 30;
+  const targetWidth = 260;
 
   let x = margin;
   let y = margin;
 
   for (const [id, bin] of Object.entries(bins)) {
     const url = `${window.location.origin}/home-storage-organizer/#/bin/${id}`;
-
     const canvas = await generateStyledQrCanvas(bin.name, url);
     const imgData = canvas.toDataURL("image/png");
 
     const aspect = canvas.height / canvas.width;
     const renderWidth = targetWidth;
-    const renderHeight = targetWidth * aspect;
+    const renderHeight = renderWidth * aspect;
 
-    // If it won't fit on this row, move to next line
+    // New row
     if (x + renderWidth > pageWidth - margin) {
       x = margin;
       y += renderHeight + gap;
     }
 
-    // If it won't fit on this page, add a new page
+    // New page
     if (y + renderHeight > pageHeight - margin) {
       pdf.addPage();
       x = margin;
@@ -70,7 +96,7 @@ export async function downloadQRCodesAsPDF(bins) {
     x += renderWidth + gap;
   }
 
-  pdf.save("bin-qr-codes.pdf");
+  pdf.save("bin-qr-codes-grid.pdf");
 }
 
 export async function generateStyledQrCanvas(label, url) {
@@ -81,6 +107,8 @@ export async function generateStyledQrCanvas(label, url) {
   await QRCode.toCanvas(qrCanvas, url, {
     width: size,
     margin: 1,
+    errorCorrectionLevel: "H",
+    maskPattern: 3,
     color: {
       dark: "#000000",
       light: "#ffffff",
