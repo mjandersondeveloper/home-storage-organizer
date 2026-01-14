@@ -1,4 +1,77 @@
 import QRCode from "qrcode";
+import jsPDF from "jspdf";
+
+export async function downloadSingleQRAsPDF(label, url) {
+  const canvas = await generateStyledQrCanvas(label, url);
+  const imgData = canvas.toDataURL("image/png");
+
+  const pdf = new jsPDF("portrait", "pt", "letter");
+
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+
+  // Fit nicely on page with margins
+  const margin = 60;
+  const maxWidth = pageWidth - margin * 2;
+
+  const aspect = canvas.height / canvas.width;
+  const renderWidth = maxWidth;
+  const renderHeight = renderWidth * aspect;
+
+  const x = margin;
+  const y = (pageHeight - renderHeight) / 2; // vertically centered
+
+  pdf.addImage(imgData, "PNG", x, y, renderWidth, renderHeight);
+
+  const safeName = label.replace(/[^a-z0-9]/gi, "_").toLowerCase();
+  pdf.save(`${safeName}-qr.pdf`);
+}
+
+export async function downloadQRCodesAsPDF(bins) {
+  const pdf = new jsPDF("portrait", "pt", "letter");
+
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+
+  const margin = 40;
+  const gap = 20;
+
+  // How large each QR appears on the printed page
+  const targetWidth = 240; // good size for cutting + scanning
+
+  let x = margin;
+  let y = margin;
+
+  for (const [id, bin] of Object.entries(bins)) {
+    const url = `${window.location.origin}/home-storage-organizer/#/bin/${id}`;
+
+    const canvas = await generateStyledQrCanvas(bin.name, url);
+    const imgData = canvas.toDataURL("image/png");
+
+    const aspect = canvas.height / canvas.width;
+    const renderWidth = targetWidth;
+    const renderHeight = targetWidth * aspect;
+
+    // If it won't fit on this row, move to next line
+    if (x + renderWidth > pageWidth - margin) {
+      x = margin;
+      y += renderHeight + gap;
+    }
+
+    // If it won't fit on this page, add a new page
+    if (y + renderHeight > pageHeight - margin) {
+      pdf.addPage();
+      x = margin;
+      y = margin;
+    }
+
+    pdf.addImage(imgData, "PNG", x, y, renderWidth, renderHeight);
+
+    x += renderWidth + gap;
+  }
+
+  pdf.save("bin-qr-codes.pdf");
+}
 
 export async function generateStyledQrCanvas(label, url) {
   const size = 800;
@@ -73,4 +146,10 @@ export async function generateStyledQrCanvas(label, url) {
   ctx.fillText(label, width / 2, dividerY + textTopSpacing + textHeight / 2);
 
   return canvas;
+}
+
+export async function canvasToBlob(canvas) {
+  return new Promise((resolve) => {
+    canvas.toBlob(resolve, "image/png");
+  });
 }

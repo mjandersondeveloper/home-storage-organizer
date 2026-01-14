@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getAllBins, saveAllBins } from "../api/binStorage";
-import { saveAs } from "file-saver";
-import { generateStyledQrCanvas } from "../utils/qrGenerator";
-import JSZip from "jszip";
+import { downloadQRCodesAsPDF } from "../utils/qrGenerator";
 import Loading from "../components/Loading";
 import "./css/HomePage.css";
 import "./css/SearchBar.css";
@@ -77,29 +75,11 @@ export default function HomePage() {
     await saveAllBins(updatedBin);
   };
 
-  const downloadAllQRCodes = async () => {
-    const zip = new JSZip();
-    const folder = zip.folder("bin-qr-codes");
-
-    for (const [id, bin] of Object.entries(bins)) {
-      const url = `${window.location.origin}/home-storage-organizer/#/bin/${id}`;
-
-      const canvas = await generateStyledQrCanvas(bin.name, url);
-      const blob = await new Promise((res) => canvas.toBlob(res, "image/png"));
-
-      const safeName = bin.name.replace(/[^a-z0-9]/gi, "_").toLowerCase();
-      folder.file(`${safeName}-qr.png`, blob);
-    }
-
-    const zipBlob = await zip.generateAsync({ type: "blob" });
-    saveAs(zipBlob, "qr-codes.zip");
-  };
-
   return (
     <div className="home-page">
       <h2>🗂️ All Bins</h2>
 
-      <button className="btn" onClick={downloadAllQRCodes}>
+      <button className="btn" onClick={() => downloadQRCodesAsPDF(bins)}>
         ⬇️ Download All QR Codes
       </button>
 
