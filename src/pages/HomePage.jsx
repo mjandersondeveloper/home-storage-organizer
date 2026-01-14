@@ -122,29 +122,34 @@ export default function HomePage() {
         </p>
       ) : (
         <ul className="bins-list">
-          {filteredBinsWithMatches.map(({ id, bin, matchingItems, extraMatchesCount }) => (
-            <li key={id} className="bin-preview">
-              <Link to={`/bin/${id}`} className="bin-link">
-                <span className="bin-name">{bin.name}</span>
-                <span className="bin-id">({id})</span>
-              </Link>
+          {filteredBinsWithMatches.map(
+            ({ id, bin, matchingItems, extraMatchesCount }) => (
+              <li key={id}>
+                <Link to={`/bin/${id}`} className="bin-link bin-link-with-preview">
+                  <div className="bin-header">
+                    <span className="bin-name">{bin.name}</span>
+                    <span className="bin-id">({id})</span>
+                  </div>
 
-              {searchTerm && matchingItems.length > 0 && (
-                <div className="matching-items-card">
-                  <ul className="matching-items-preview">
-                    {matchingItems.map((item, index) => (
-                      <li key={index} className="matching-item-preview">
-                        {item}
-                      </li>
-                    ))}
-                    {extraMatchesCount > 0 && (
-                      <li className="matching-item-preview">+{extraMatchesCount} more...</li>
-                    )}
-                  </ul>
-                </div>
-              )}
-            </li>
-          ))}
+                  {searchTerm && matchingItems.length > 0 && (
+                    <div className="bin-preview-list">
+                      {matchingItems.map((item, index) => (
+                        <div key={index} className="bin-preview-item">
+                          {item}
+                        </div>
+                      ))}
+
+                      {extraMatchesCount > 0 && (
+                        <div className="bin-preview-item more">
+                          +{extraMatchesCount} more…
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </Link>
+              </li>
+            )
+          )}
         </ul>
       )}
     </div>
