@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getAllBins, saveAllBins } from "../api/binStorage";
+import { downloadQRCodesAsPDF } from "../utils/qrGenerator";
 import Loading from "../components/Loading";
 import "./css/HomePage.css";
 import "./css/SearchBar.css";
@@ -77,6 +78,10 @@ export default function HomePage() {
   return (
     <div className="home-page">
       <h2>🗂️ All Bins</h2>
+
+      <button className="btn" onClick={() => downloadQRCodesAsPDF(bins)}>
+        ⬇️ Download All QR Codes
+      </button>
 
       <div className="card create-card">
         <h3 className="card-title">➕ Create New Bin</h3>
