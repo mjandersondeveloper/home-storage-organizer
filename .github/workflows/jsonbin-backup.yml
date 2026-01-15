@@ -2,7 +2,7 @@ name: JSONBin Backup
 
 on:
   schedule:
-    - cron: "0 9 1 * *"  # At 09:00 on first day of the month
+    - cron: '0 9 1 * *'  # At 09:00 on first day of the month
   workflow_dispatch:
 
 jobs:
