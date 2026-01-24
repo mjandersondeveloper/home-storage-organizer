@@ -132,51 +132,42 @@ export default function BinPage() {
         </p>
       ) : (
         <ul className="item-list">
-          {filteredItems.map((item, index) => (
-            <li key={index} className="item">
-              {editingIndex === index ? (
-                <div className="edit-row">
-                  <input
-                    value={editValue}
-                    onChange={(e) => setEditValue(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") saveEditedItem(index);
-                    }}
-                    autoFocus
-                    className="edit-input"
-                  />
-
-                  <button className="save-btn" onClick={() => saveEditedItem(index)}>✓</button>
-                  <button className="cancel-btn" onClick={cancelEditedItem}>✕</button>
-                </div>
-              ) : (
-                <>
-                  <span className="item-text">
-                    {item}
-                  </span>
-
-                  <div className="item-actions">
-                    <button
-                      className="edit-btn"
-                      onClick={() => {
-                        setEditingIndex(index);
-                        setEditValue(item);
+          {filteredItems.map((item, filteredIndex) => {
+            const realIndex = bin.items.findIndex((i) => i === item && !filteredItems.slice(0, filteredIndex).includes(i));
+            return (
+              <li key={realIndex} className="item">
+                {editingIndex === realIndex ? (
+                  <div className="edit-row">
+                    <input
+                      value={editValue}
+                      onChange={(e) => setEditValue(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") saveEditedItem(realIndex);
                       }}
-                    >
-                      Edit
-                    </button>
+                      autoFocus
+                      className="edit-input"
+                    />
 
-                    <button
-                      className="remove-btn"
-                      onClick={() => removeItem(index)}
-                    >
-                      Remove
-                    </button>
+                    <button className="save-btn" onClick={() => saveEditedItem(realIndex)}>✓</button>
+                    <button className="cancel-btn" onClick={cancelEditedItem}>✕</button>
                   </div>
-                </>
-              )}
-            </li>
-          ))}
+                ) : (
+                  <div className="item-row">
+                    <span className="item-text">{item}</span>
+
+                    <div className="item-actions">
+                      <button className="edit-btn" onClick={() => {
+                        setEditingIndex(realIndex);
+                        setEditValue(item);
+                      }}>Edit</button>
+
+                      <button className="remove-btn" onClick={() => removeItem(realIndex)}>Remove</button>
+                    </div>
+                  </div>
+                )}
+              </li>
+            );
+          })}
         </ul>
       )}
 
