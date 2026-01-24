@@ -13,6 +13,8 @@ export default function BinPage() {
   const [newItem, setNewItem] = useState("");
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [editValue, setEditValue] = useState("");
 
   useEffect(() => { 
     async function fetchBins() {
@@ -64,6 +66,28 @@ export default function BinPage() {
     await updateBin(updatedBin);
   };
 
+  const saveEditedItem = async (index) => {
+    const text = editValue.trim();
+    if (!text) return;
+
+    const updatedItems = [...bin.items];
+    updatedItems[index] = text;
+
+    const updatedBin = {
+      ...bins,
+      [binId]: { ...bin, items: updatedItems }
+    };
+
+    setEditingIndex(null);
+    setEditValue("");
+    await updateBin(updatedBin);
+  }
+
+  const cancelEditedItem = () => {
+    setEditingIndex(null);
+    setEditValue("");
+  }
+
   const filteredItems = bin.items.filter((item) =>
     item.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -110,8 +134,47 @@ export default function BinPage() {
         <ul className="item-list">
           {filteredItems.map((item, index) => (
             <li key={index} className="item">
-              <span className="item-text">{item}</span>
-              <button className="remove-btn" onClick={() => removeItem(index)}>Remove</button>
+              {editingIndex === index ? (
+                <div className="edit-row">
+                  <input
+                    value={editValue}
+                    onChange={(e) => setEditValue(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") saveEditedItem(index);
+                    }}
+                    autoFocus
+                    className="edit-input"
+                  />
+
+                  <button className="save-btn" onClick={() => saveEditedItem(index)}>✓</button>
+                  <button className="cancel-btn" onClick={cancelEditedItem}>✕</button>
+                </div>
+              ) : (
+                <>
+                  <span className="item-text">
+                    {item}
+                  </span>
+
+                  <div className="item-actions">
+                    <button
+                      className="edit-btn"
+                      onClick={() => {
+                        setEditingIndex(index);
+                        setEditValue(item);
+                      }}
+                    >
+                      Edit
+                    </button>
+
+                    <button
+                      className="remove-btn"
+                      onClick={() => removeItem(index)}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </>
+              )}
             </li>
           ))}
         </ul>
