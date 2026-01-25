@@ -13,6 +13,8 @@ export default function BinPage() {
   const [newItem, setNewItem] = useState("");
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [editValue, setEditValue] = useState("");
 
   useEffect(() => { 
     async function fetchBins() {
@@ -64,6 +66,28 @@ export default function BinPage() {
     await updateBin(updatedBin);
   };
 
+  const saveEditedItem = async (index) => {
+    const text = editValue.trim();
+    if (!text) return;
+
+    const updatedItems = [...bin.items];
+    updatedItems[index] = text;
+
+    const updatedBin = {
+      ...bins,
+      [binId]: { ...bin, items: updatedItems }
+    };
+
+    setEditingIndex(null);
+    setEditValue("");
+    await updateBin(updatedBin);
+  }
+
+  const cancelEditedItem = () => {
+    setEditingIndex(null);
+    setEditValue("");
+  }
+
   const filteredItems = bin.items.filter((item) =>
     item.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -108,12 +132,43 @@ export default function BinPage() {
         </p>
       ) : (
         <ul className="item-list">
-          {filteredItems.map((item, index) => (
-            <li key={index} className="item">
-              <span className="item-text">{item}</span>
-              <button className="remove-btn" onClick={() => removeItem(index)}>Remove</button>
-            </li>
-          ))}
+          {filteredItems.map((item, filteredIndex) => {
+            const realIndex = bin.items.findIndex((i) => i === item && !filteredItems.slice(0, filteredIndex).includes(i));
+            return (
+              <li key={realIndex} className="item">
+                {editingIndex === realIndex ? (
+                  <div className="edit-row">
+                    <input
+                      value={editValue}
+                      onChange={(e) => setEditValue(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") saveEditedItem(realIndex);
+                      }}
+                      onBlur={cancelEditedItem}
+                      autoFocus
+                      className="edit-input"
+                    />
+
+                    <button className="save-btn" onMouseDown={(e) => e.preventDefault()} onClick={() => saveEditedItem(editingIndex)}>✓</button>
+                    <button className="cancel-btn"  onMouseDown={(e) => e.preventDefault()} onClick={cancelEditedItem}>✕</button>
+                  </div>
+                ) : (
+                  <div className="item-row">
+                    <span className="item-text">{item}</span>
+
+                    <div className="item-actions">
+                      <button className="edit-btn" onClick={() => {
+                        setEditingIndex(realIndex);
+                        setEditValue(item);
+                      }}>Edit</button>
+
+                      <button className="remove-btn" onClick={() => removeItem(realIndex)}>Remove</button>
+                    </div>
+                  </div>
+                )}
+              </li>
+            );
+          })}
         </ul>
       )}
 
