@@ -15,6 +15,9 @@ export default function BinPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [editingIndex, setEditingIndex] = useState(null);
   const [editValue, setEditValue] = useState("");
+  const [editingBinName, setEditingBinName] = useState(false);
+  const [binNameValue, setBinNameValue] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => { 
     async function fetchBins() {
@@ -81,12 +84,39 @@ export default function BinPage() {
     setEditingIndex(null);
     setEditValue("");
     await updateBin(updatedBin);
-  }
+  };
 
   const cancelEditedItem = () => {
     setEditingIndex(null);
     setEditValue("");
   }
+
+  const saveEditedBinName = async () => {
+    const text = binNameValue.trim();
+    if (!text) return;
+
+    const updatedBins = {
+      ...bins,
+      [binId]: { ...bin, name: text }
+    };
+
+    setEditingBinName(false);
+    setBinNameValue("");
+    await updateBin(updatedBins);
+  };
+
+  const cancelEditedBinName = () => {
+    setEditingBinName(false);
+    setBinNameValue("");
+  };
+
+  const deleteBin = async () => {
+    const updatedBins = { ...bins };
+    delete updatedBins[binId];
+
+    await saveAllBins(updatedBins);
+    window.location.hash = "#/";
+  };
 
   const filteredItems = bin.items.filter((item) =>
     item.toLowerCase().includes(searchTerm.toLowerCase())
@@ -98,7 +128,60 @@ export default function BinPage() {
         <Link to="/" className="home-link">🏠 Home</Link>
       </div>
 
-      <h2 className="bin-title">{bin.name}</h2>
+      {editingBinName ? (
+        <div className="edit-row">
+          <input
+            value={binNameValue}
+            onChange={(e) => setBinNameValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") saveEditedBinName();
+              if (e.key === "Escape") cancelEditedBinName();
+            }}
+            onBlur={cancelEditedBinName}
+            autoFocus
+            className="edit-input"
+          />
+
+          <button className="save-btn" onMouseDown={(e) => e.preventDefault()} onClick={saveEditedBinName}>✓</button>
+          <button className="cancel-btn" onMouseDown={(e) => e.preventDefault()} onClick={cancelEditedBinName}>✕</button>
+        </div>
+      ) : (
+        <div className="item-row">
+          <h2 className="bin-title">{bin.name}</h2>
+
+          <div className="item-actions">
+            <button
+              className="edit-btn"
+              onClick={() => {
+                setEditingBinName(true);
+                setBinNameValue(bin.name);
+              }}>Edit</button>
+
+            <button
+              className="remove-btn"
+              onClick={() => setShowDeleteModal(true)}>Remove</button>
+          </div>
+          
+          {showDeleteModal && (
+            <div className="modal-overlay">
+              <div className="modal-card">
+                <h3>Are you sure?</h3>
+                <p>This will permanently remove "{bin.name}" and all its items.</p>
+
+                <div className="item-actions">
+                  <button className="cancel-modal-btn" onClick={() => setShowDeleteModal(false)}>
+                    Cancel
+                  </button>
+
+                  <button className="remove-btn" onClick={deleteBin}>
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="qr-area">
         <button
