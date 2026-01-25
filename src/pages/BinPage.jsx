@@ -144,12 +144,13 @@ export default function BinPage() {
                       onKeyDown={(e) => {
                         if (e.key === "Enter") saveEditedItem(realIndex);
                       }}
+                      onBlur={cancelEditedItem}
                       autoFocus
                       className="edit-input"
                     />
 
-                    <button className="save-btn" onClick={() => saveEditedItem(realIndex)}>✓</button>
-                    <button className="cancel-btn" onClick={cancelEditedItem}>✕</button>
+                    <button className="save-btn" onMouseDown={(e) => e.preventDefault()} onClick={() => saveEditedItem(editingIndex)}>✓</button>
+                    <button className="cancel-btn"  onMouseDown={(e) => e.preventDefault()} onClick={cancelEditedItem}>✕</button>
                   </div>
                 ) : (
                   <div className="item-row">
