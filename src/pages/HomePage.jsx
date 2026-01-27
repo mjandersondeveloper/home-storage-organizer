@@ -50,7 +50,10 @@ export default function HomePage() {
 
     return { id, bin, matchingItems, extraMatchesCount };
   })
-  .filter(Boolean);
+  .filter(Boolean)
+  .sort((a, b) =>
+    a.bin.name.toLowerCase().localeCompare(b.bin.name.toLowerCase())
+  );
 
   const createBin = async () => {
     const name = newBinName.trim();
