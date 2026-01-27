@@ -136,7 +136,7 @@ export default function HomePage() {
                 <Link to={`/bin/${id}`} className="bin-link bin-link-with-preview">
                   <div className="bin-header">
                     <span className="bin-name">{bin.name}</span>
-                    <span className="bin-id">({id})</span>
+                    {/* <span className="bin-id">({id})</span> */}
                   </div>
 
                   {searchTerm && matchingItems.length > 0 && (

@@ -120,11 +120,29 @@ export async function generateStyledQrCanvas(label, url) {
   const borderRadius = 20;
   const dividerSpacing = 35;
   const textTopSpacing = 80;
-  const textHeight = 40;
   const bottomPadding = 40;
-
   const width = size + padding * 2;
-  const height = size + padding * 2 + dividerSpacing + textTopSpacing + textHeight + bottomPadding;
+
+  // Temporary canvas just for measuring text
+  const tempCanvas = document.createElement("canvas");
+  const tempCtx = tempCanvas.getContext("2d");
+
+  tempCtx.font = `600 80px "Segoe UI Rounded", system-ui, sans-serif`;
+
+  const maxTextWidth = width - 120;
+  const lineHeight = 90;
+
+  const lines = wrapText(tempCtx, label, maxTextWidth);
+
+  const dynamicTextHeight = lines.length * lineHeight;
+
+  const height =
+    size +
+    padding * 2 +
+    dividerSpacing +
+    textTopSpacing +
+    dynamicTextHeight +
+    bottomPadding;
 
   const canvas = document.createElement("canvas");
   canvas.width = width;
@@ -171,7 +189,16 @@ export async function generateStyledQrCanvas(label, url) {
   ctx.font = `600 80px "Segoe UI Rounded", system-ui, sans-serif`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText(label, width / 2, dividerY + textTopSpacing + textHeight / 2);
+
+  // Draw each line centered
+  lines.forEach((line, i) => {
+    const y =
+      dividerY +
+      textTopSpacing +
+      i * lineHeight;
+
+    ctx.fillText(line, width / 2, y);
+  });
 
   return canvas;
 }
@@ -180,4 +207,26 @@ export async function canvasToBlob(canvas) {
   return new Promise((resolve) => {
     canvas.toBlob(resolve, "image/png");
   });
+}
+
+function wrapText(ctx, text, maxWidth) {
+  const words = text.split(" ");
+  const lines = [];
+  let currentLine = "";
+
+  for (const word of words) {
+    const testLine = currentLine ? currentLine + " " + word : word;
+    const { width } = ctx.measureText(testLine);
+
+    if (width > maxWidth && currentLine) {
+      lines.push(currentLine);
+      currentLine = word;
+    } else {
+      currentLine = testLine;
+    }
+  }
+
+  if (currentLine) lines.push(currentLine);
+
+  return lines;
 }
