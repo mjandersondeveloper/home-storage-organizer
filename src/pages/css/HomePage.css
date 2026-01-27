@@ -76,3 +76,36 @@
 .no-bins {
   color: #bbb;
 }
+
+/* ---------- Bin Rooms ---------- */
+
+.room-section {
+  margin-top: 24px;
+}
+
+.room-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+  color: #aeb8ff;
+  cursor: pointer;
+  user-select: none;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: transform 120ms ease, color 120ms ease, letter-spacing 120ms ease;
+}
+
+
+.room-title:hover {
+  transform: translateY(-1px) scale(1.03);
+  color: #d6ddff;
+  letter-spacing: 0.3px;
+}
+
+.room-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}

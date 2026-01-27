@@ -12,6 +12,8 @@ export default function HomePage() {
   const [newBinId, setNewBinId] = useState("");
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [newBinRoom, setNewBinRoom] = useState("");
+  const [collapsedRooms, setCollapsedRooms] = useState({});
   const householdId = "worman-drive"; // Static household ID for now
 
   useEffect(() => {
@@ -56,11 +58,27 @@ export default function HomePage() {
     a.bin.name.toLowerCase().localeCompare(b.bin.name.toLowerCase())
   );
 
+  const groupedBins = filteredBinsWithMatches.reduce((groups, entry) => {
+    const room = entry.bin.room ?? "Unassigned";
+    if (!groups[room]) {
+      groups[room] = [];
+    }
+    groups[room].push(entry);
+    return groups;
+  }, {});
+
+  const toggleRoom = (room) => {
+    setCollapsedRooms(prev => ({
+    ...prev,
+    [room]: !prev[room],
+    }));
+  };
+
   const createBin = async () => {
     const name = newBinName.trim();
     const id = newBinId.trim();
-    if (!name || !id) {
-      alert("Please enter both a Bin Name and a Bin ID.");
+    if (!name || !id || !newBinRoom) {
+      alert("Please enter both a Bin Name, Bin ID, and Room.");
       return;
     }
     if (bins[id]) {
@@ -70,12 +88,13 @@ export default function HomePage() {
 
     const updatedBin = {
       ...bins,
-      [id]: { name, items: [] },
+      [id]: { name, room: newBinRoom, items: [] },
     };
 
     setBins(updatedBin);
     setNewBinName("");
     setNewBinId("");
+    setNewBinRoom("");
     await saveAllBins(updatedBin);
   };
 
@@ -102,6 +121,20 @@ export default function HomePage() {
             onChange={(e) => setNewBinId(e.target.value)}
             className="input"
           />
+          <select
+            value={newBinRoom} onChange={(e) => setNewBinRoom(e.target.value)}
+            className="input"
+          >
+            <option value="">Select Room</option>
+            <option value="Basement">Basement</option>
+            <option value="Garage">Garage</option>
+            <option value="Kitchen">Kitchen</option>
+            <option value="Bedroom">Bedroom</option>
+            <option value="Living Room">Living Room</option>
+            <option value="Office">Office</option>
+            <option value="Attic">Attic</option>
+            <option value="Other">Other</option>
+          </select>
           <button onClick={createBin} className="btn">
             Create Bin
           </button>
@@ -130,36 +163,48 @@ export default function HomePage() {
           {searchTerm ? "No matching results!" : "No bins stored yet!"}
         </p>
       ) : (
-        <ul className="bins-list">
-          {filteredBinsWithMatches.map(
-            ({ id, bin, matchingItems, extraMatchesCount }) => (
-              <li key={id}>
-                <Link to={`${householdId}/bin/${id}`} className="bin-link bin-link-with-preview">
-                  <div className="bin-header">
-                    <span className="bin-name">{bin.name}</span>
-                    {/* <span className="bin-id">({id})</span> */}
-                  </div>
+        <div className="room-groups">
+          {Object.entries(groupedBins)
+            .sort(([a], [b]) => a.localeCompare(b))
+            .map(([room, bins]) => (
+              <div key={room} className="room-section">
+                <h3 className="room-title" onClick={() => toggleRoom(room)}>
+                  {collapsedRooms[room] ? "▶" : "▼"} {room}
+                </h3>
 
-                  {searchTerm && matchingItems.length > 0 && (
-                    <div className="bin-preview-list">
-                      {matchingItems.map((item, index) => (
-                        <div key={index} className="bin-preview-item">
-                          {item}
-                        </div>
-                      ))}
+                {!collapsedRooms[room] && (
+                  <ul className="bins-list">
+                    {bins.map(({ id, bin, matchingItems, extraMatchesCount }) => (
+                      <li key={id}>
+                        <Link to={`${householdId}/bin/${id}`} className="bin-link bin-link-with-preview">
+                          <div className="bin-header">
+                            <span className="bin-name">{bin.name}</span>
+                            {/* <span className="bin-id">({id})</span> */}
+                          </div>
 
-                      {extraMatchesCount > 0 && (
-                        <div className="bin-preview-item more">
-                          +{extraMatchesCount} more…
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </Link>
-              </li>
-            )
-          )}
-        </ul>
+                          {searchTerm && matchingItems.length > 0 && (
+                            <div className="bin-preview-list">
+                              {matchingItems.map((item, index) => (
+                                <div key={index} className="bin-preview-item">
+                                  {item}
+                                </div>
+                              ))}
+
+                              {extraMatchesCount > 0 && (
+                                <div className="bin-preview-item more">
+                                  +{extraMatchesCount} more…
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            ))}
+        </div>
       )}
     </div>
   );

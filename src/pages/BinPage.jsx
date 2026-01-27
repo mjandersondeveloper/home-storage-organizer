@@ -18,6 +18,7 @@ export default function BinPage() {
   const [editingBinName, setEditingBinName] = useState(false);
   const [binNameValue, setBinNameValue] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [editingRoom, setEditingRoom] = useState(false);
 
   useEffect(() => { 
     async function fetchBins() {
@@ -135,7 +136,6 @@ export default function BinPage() {
             onChange={(e) => setBinNameValue(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter") saveEditedBinName();
-              if (e.key === "Escape") cancelEditedBinName();
             }}
             onBlur={cancelEditedBinName}
             autoFocus
@@ -146,40 +146,79 @@ export default function BinPage() {
           <button className="cancel-btn" onMouseDown={(e) => e.preventDefault()} onClick={cancelEditedBinName}>✕</button>
         </div>
       ) : (
-        <div className="item-row">
-          <h2 className="bin-title">{bin.name}</h2>
+        <div>
+          <div className="item-row">
+            <h2 className="bin-title">{bin.name}</h2>
+            
+            <div className="item-actions">
+              <button
+                className="edit-btn"
+                onClick={() => {
+                  setEditingBinName(true);
+                  setBinNameValue(bin.name);
+                }}>Edit</button>
 
-          <div className="item-actions">
-            <button
-              className="edit-btn"
-              onClick={() => {
-                setEditingBinName(true);
-                setBinNameValue(bin.name);
-              }}>Edit</button>
+              <button
+                className="remove-btn"
+                onClick={() => setShowDeleteModal(true)}>Remove</button>
+            </div>
+            
+            {showDeleteModal && (
+              <div className="modal-overlay">
+                <div className="modal-card">
+                  <h3>Are you sure?</h3>
+                  <p>This will permanently remove "{bin.name}" and all its items.</p>
 
-            <button
-              className="remove-btn"
-              onClick={() => setShowDeleteModal(true)}>Remove</button>
-          </div>
-          
-          {showDeleteModal && (
-            <div className="modal-overlay">
-              <div className="modal-card">
-                <h3>Are you sure?</h3>
-                <p>This will permanently remove "{bin.name}" and all its items.</p>
+                  <div className="item-actions">
+                    <button className="cancel-modal-btn" onClick={() => setShowDeleteModal(false)}>
+                      Cancel
+                    </button>
 
-                <div className="item-actions">
-                  <button className="cancel-modal-btn" onClick={() => setShowDeleteModal(false)}>
-                    Cancel
-                  </button>
-
-                  <button className="remove-btn" onClick={deleteBin}>
-                    Delete
-                  </button>
+                    <button className="remove-btn" onClick={deleteBin}>
+                      Delete
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
+          <div className="item-row">
+            {editingRoom ? (
+              <select
+                className="input"  
+                value={bin.room ?? "Unassigned"}
+                onChange={async (e) => {
+                  const updated = {
+                    ...bins,
+                    [binId]: { ...bin, room: e.target.value },
+                  };
+                  await updateBin(updated);
+                  setEditingRoom(false);
+                }}
+                onBlur={() => setEditingRoom(false)}
+                autoFocus
+              >
+                <option>Basement</option>
+                <option>Garage</option>
+                <option>Kitchen</option>
+                <option>Bedroom</option>
+                <option>Living Room</option>
+                <option>Office</option>
+                <option>Attic</option>
+                <option>Other</option>
+                <option>Unassigned</option>
+              </select>
+            ) : (
+              <span
+                className="room-pill"
+                onClick={() => setEditingRoom(true)}
+                style={{ cursor: "pointer" }}
+                title="Click to edit room"
+              >
+                {bin.room ?? "Unassigned"}
+              </span>
+            )}
+          </div>
         </div>
       )}
 

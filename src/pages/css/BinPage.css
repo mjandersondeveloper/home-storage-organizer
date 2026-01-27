@@ -217,3 +217,23 @@ width: 100%;
 .modal-card p {
   color: #bbb;
 }
+
+/* ---------- Room Pill ---------- */
+
+.room-pill {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 4px 10px;
+  font-size: 14px;
+  border-radius: 999px;
+  background: #2a2f3a;
+  color: #cdd6ff;
+  width: fit-content;
+}
+
+.room-basement { background: #2c244a; }
+.room-garage { background: #3a2f1f; }
+.room-kitchen { background: #1f3a2f; }
+.room-bedroom { background: #2f1f3a; }
+.room-office { background: #1f2f3a; }
+.room-unassigned { background: #333; }
