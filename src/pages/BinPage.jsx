@@ -7,7 +7,7 @@ import "./css/BinPage.css";
 import "./css/SearchBar.css";
 
 export default function BinPage() {
-  const { binId } = useParams();
+  const { householdId, binId } = useParams();  
   const [bins, setBins] = useState({});
   const [bin, setBin] = useState(null);
   const [newItem, setNewItem] = useState("");
@@ -41,8 +41,8 @@ export default function BinPage() {
     );
   }
 
-  const getBinUrl = (binId) =>
-  `${window.location.origin}/home-storage-organizer/#/bin/${binId}`;
+  const getBinUrl = (householdId, binId) =>
+  `${window.location.origin}/home-storage-organizer/#/${householdId}/bin/${binId}`;
 
   const updateBin = async (updatedBin) => {
     setBins(updatedBin);
@@ -185,7 +185,7 @@ export default function BinPage() {
 
       <div className="qr-area">
         <button
-          onClick={() => downloadSingleQRAsPDF(bin.name, getBinUrl(binId))}
+          onClick={() => downloadSingleQRAsPDF(bin.name, getBinUrl(householdId, binId))}
           className="btn download-btn"
         >
           ⬇️ Download QR Code

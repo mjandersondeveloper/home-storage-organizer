@@ -12,6 +12,7 @@ export default function HomePage() {
   const [newBinId, setNewBinId] = useState("");
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const householdId = "worman-drive"; // Static household ID for now
 
   useEffect(() => {
     async function load() {
@@ -133,7 +134,7 @@ export default function HomePage() {
           {filteredBinsWithMatches.map(
             ({ id, bin, matchingItems, extraMatchesCount }) => (
               <li key={id}>
-                <Link to={`/bin/${id}`} className="bin-link bin-link-with-preview">
+                <Link to={`${householdId}/bin/${id}`} className="bin-link bin-link-with-preview">
                   <div className="bin-header">
                     <span className="bin-name">{bin.name}</span>
                     {/* <span className="bin-id">({id})</span> */}
