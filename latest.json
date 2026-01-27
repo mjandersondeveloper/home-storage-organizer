@@ -1,12 +1,8 @@
 {
   "bins": {
     "basement-001": {
-      "name": "Basement Bin 1",
+      "name": "Christmas Decorations 1",
       "items": [
-        "Christmas pillows",
-        "Christmas stockings",
-        "Stuffed Grinch + Max",
-        "Santa hats",
         "Christmas coffee mugs",
         "Reindeer coasters",
         "Black velvet reindeer",
@@ -18,70 +14,256 @@
         "Nutcrackers",
         "Red printed table runner",
         "Gnome salt and pepper shakers"
-      ]
+      ],
+      "room": "Kitchen"
     },
     "basement-002": {
-      "name": "Basement Bin 2",
+      "name": "Christmas Decorations 2",
       "items": [
         "Box of snow people",
-        "Red printed table runner",
         "Mantle glitter trees",
         "Cookie cutters",
         "Tree stars",
         "Blue tree skirt",
-        "Red/white tree skirt"
-      ]
+        "Red/white tree skirt",
+        "Red printed table runner"
+      ],
+      "room": "Basement"
     },
     "basement-003": {
-      "name": "Basement Bin 3",
+      "name": "Christmas Decorations 3",
       "items": [
         "Sporting ornaments",
         "Glitter christmas ornament boxes",
         "Blue bulb w/ red ribbons ornament",
         "Blue metal angles ornament",
-        "Canva wedding ornament boxes"
-      ]
+        "Canva wedding ornament boxes",
+        "Grandma's nativity scene"
+      ],
+      "room": "Basement"
     },
     "basement-004": {
-      "name": "Basement Bin 4",
+      "name": "Hosting Bin 1",
       "items": [
-        "Miscellaneous ornaments"
-      ]
+        "Hosting items"
+      ],
+      "room": "Basement"
     },
     "basement-005": {
-      "name": "Basement Bin 5",
+      "name": "Christmas Decorations 4",
       "items": [
         "Big/small purple glitter ornaments",
         "Rainbow glitter ornaments",
-        "Red/gold glitter ornaments"
-      ]
+        "Red/gold glitter ornaments",
+        "Miscellaneous ornaments"
+      ],
+      "room": "Basement"
     },
     "basement-006": {
-      "name": "Basement Bin 6",
+      "name": "Christmas Mantle Houses",
       "items": [
         "Christmas mantle houses"
-      ]
+      ],
+      "room": "Basement"
     },
     "basement-007": {
-      "name": "Basement Bin 7",
+      "name": "Outdoor Christmas Lights 1",
       "items": [
         "Outdoor christmas lights",
         "Outdoor smart plugs"
-      ]
+      ],
+      "room": "Basement"
     },
     "basement-008": {
-      "name": "Basement Bin 8",
+      "name": "Outdoor Christmas Lights 2",
       "items": [
         "Outdoor christmas lights"
-      ]
+      ],
+      "room": "Basement"
     },
     "basement-009": {
-      "name": "Basement Bin 9",
-      "items": []
+      "name": "Spring Decorations",
+      "items": [
+        "Pink flowers",
+        "White flowers",
+        "Green branches",
+        "Miscellaneous coffee mugs",
+        "Fake lavender"
+      ],
+      "room": "Basement"
     },
     "basement-010": {
-      "name": "Basement Bin 10",
-      "items": []
+      "name": "Halloween Decorations 1",
+      "items": [
+        "Pumpkin pillows",
+        "Fall pillow",
+        "Black netting",
+        "Rat Garland",
+        "Skeleton lights",
+        "Autumn leaf branches",
+        "Sparkly black cat",
+        "Pumpkin bowl",
+        "Plain light up pumpkin",
+        "Ghost candles",
+        "Miscellaneous Halloween items"
+      ],
+      "room": "Basement"
+    },
+    "basement-011": {
+      "name": "Halloween Decorations 2",
+      "items": [
+        "Furry spiders",
+        "Sparkly light up pumpkin",
+        "Ceramic ghost",
+        "Orange knit pumpkins",
+        "White knit pumpkins",
+        "Halloween coffee mugs",
+        "Black light up candles",
+        "Sparkly Frankenstein",
+        "Sparkly eek",
+        "Sparkly spooky tree",
+        "Black spider tree",
+        "Sparkly skulls"
+      ],
+      "room": "Basement"
+    },
+    "basement-012": {
+      "name": "Wedding Memorabilia",
+      "items": [
+        "Wedding memorabilia"
+      ],
+      "room": "Basement"
+    },
+    "basement-013": {
+      "name": "Life Event Cards",
+      "items": [
+        "Life event cards"
+      ],
+      "room": "Basement"
+    },
+    "basement-014": {
+      "name": "Easter Decorations",
+      "items": [
+        "Easter decorations"
+      ],
+      "room": "Garage"
+    },
+    "basement-015": {
+      "name": "Random Memory Items",
+      "items": [
+        "Random memory items"
+      ],
+      "room": "Basement"
+    },
+    "basement-016": {
+      "name": "Ocean Gear",
+      "items": [
+        "Snorkel gear",
+        "Water ball"
+      ],
+      "room": "Basement"
+    },
+    "basement-017": {
+      "name": "Spare Tools and Materials",
+      "items": [
+        "Miscellaneous tools and materials"
+      ],
+      "room": "Basement"
+    },
+    "basement-018": {
+      "name": "Wii Console and Games",
+      "items": [
+        "Wii",
+        "Wii games"
+      ],
+      "room": "Basement"
+    },
+    "basement-019": {
+      "name": "Appliances",
+      "items": [
+        "Toaster (backup)",
+        "Rocket blender",
+        "Big crockpot",
+        "Small crockpot",
+        "Glass deep dish",
+        "Mini muffin tin",
+        "Regular muffin tin"
+      ],
+      "room": "Kitchen"
+    },
+    "basement-020": {
+      "name": "Craft Supplies",
+      "items": [
+        "Wooden board",
+        "Letter stickers",
+        "Pearl stickers",
+        "Turtle stickers",
+        "Small bottles of paint",
+        "Feathers",
+        "Pipe cleaners",
+        "Square/rectangle canvases",
+        "Paint brushes"
+      ],
+      "room": "Office"
+    },
+    "basement-021": {
+      "name": "Hosting Bin 2",
+      "items": [
+        "Black table runner",
+        "White table runner",
+        "Rectangle marble white with gold trim charcuterie board",
+        "Gold small serving bowls",
+        "Misc charcuterie silverware",
+        "White taper candles",
+        "Gold napkin rings",
+        "Gold leaf napkin rings"
+      ],
+      "room": "Basement"
+    },
+    "basement-022": {
+      "name": "Hosting Bin 3",
+      "items": [
+        "Glass stacked drink dispenser",
+        "Glass drink container with cork top",
+        "White medium serving bowls",
+        "Bundt pan",
+        "Glass cake platter",
+        "Pasta bowl",
+        "Green pattern plastic platter"
+      ],
+      "room": "Basement"
+    },
+    "basement-023": {
+      "name": "Hosting Bin 4",
+      "items": [
+        "White ceramic large baking dish and trivet",
+        "Wooden and slate compartment charcuterie board and serving set",
+        "Three white small rectangle plates",
+        "White oval oven to table dish with black trivet"
+      ],
+      "room": "Basement"
+    },
+    "basement-024": {
+      "name": "Hosting Bin 5",
+      "items": [
+        "Circle marble white with gold trim charcuterie board",
+        "Mortar and pestle",
+        "Matte black large serving bowl",
+        "Matte black mini bowls (4)",
+        "Matte black large serving platter",
+        "Serving tower"
+      ],
+      "room": "Basement"
+    },
+    "basement-025": {
+      "name": "Hosting Bin 6",
+      "items": [
+        "Gray plastic ice bucket",
+        "Mason jar drink dispenser",
+        "Wok",
+        "Cocktail smoker"
+      ],
+      "room": "Basement"
     }
   }
 }
