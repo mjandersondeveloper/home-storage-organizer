@@ -59,7 +59,7 @@ export default function HomePage() {
   );
 
   const groupedBins = filteredBinsWithMatches.reduce((groups, entry) => {
-    const room = entry.bin.room ?? "Unassigned";
+    const room = entry.bin.room;
     if (!groups[room]) {
       groups[room] = [];
     }
@@ -169,7 +169,10 @@ export default function HomePage() {
             .map(([room, bins]) => (
               <div key={room} className="room-section">
                 <h3 className="room-title" onClick={() => toggleRoom(room)}>
-                  {collapsedRooms[room] ? "▶" : "▼"} {room}
+                  <span className={`chevron ${collapsedRooms[room] ? "collapsed" : ""}`}>
+                    ▶
+                  </span>
+                  {room}
                 </h3>
 
                 {!collapsedRooms[room] && (

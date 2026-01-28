@@ -230,10 +230,3 @@ width: 100%;
   color: #cdd6ff;
   width: fit-content;
 }
-
-.room-basement { background: #2c244a; }
-.room-garage { background: #3a2f1f; }
-.room-kitchen { background: #1f3a2f; }
-.room-bedroom { background: #2f1f3a; }
-.room-office { background: #1f2f3a; }
-.room-unassigned { background: #333; }

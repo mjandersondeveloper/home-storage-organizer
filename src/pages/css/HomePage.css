@@ -67,6 +67,10 @@
   font-weight: 600;
 }
 
+.bin-link:hover {
+  background: #1f2430;
+}
+
 .bin-id {
   margin-left: 8px;
   font-size: 12px;
@@ -80,8 +84,14 @@
 /* ---------- Bin Rooms ---------- */
 
 .room-section {
-  margin-top: 24px;
+  margin: 0 0 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 14px;
+  padding: 12px 12px 6px;
+  transition: background 150ms ease, border-color 150ms ease;
 }
+
 
 .room-title {
   display: flex;
@@ -94,18 +104,49 @@
   user-select: none;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  position: relative;
+  padding-bottom: 6px;
   transition: transform 120ms ease, color 120ms ease, letter-spacing 120ms ease;
 }
 
-
 .room-title:hover {
-  transform: translateY(-1px) scale(1.03);
+  /* transform: translateY(-1px) scale(1.03); */
   color: #d6ddff;
   letter-spacing: 0.3px;
+}
+
+/* Subtle divider */
+.room-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    rgba(255,255,255,0.08),
+    rgba(255,255,255,0.02),
+    transparent
+  );
 }
 
 .room-groups {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.chevron {
+  display: inline-block;
+  transition: transform 150ms ease;
+}
+
+.chevron.collapsed {
+  transform: rotate(0deg);
+}
+
+.chevron:not(.collapsed) {
+  transform: rotate(90deg);
 }
