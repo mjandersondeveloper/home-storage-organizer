@@ -169,10 +169,10 @@ export default function HomePage() {
             .map(([room, bins]) => (
               <div key={room} className="room-section">
                 <h3 className="room-title" onClick={() => toggleRoom(room)}>
-                  <span className={`chevron ${collapsedRooms[room] ? "collapsed" : ""}`}>
-                    ▶
-                  </span>
                   {room}
+                  {/* <span className={`chevron ${collapsedRooms[room] ? "collapsed" : ""}`}>
+                    ▶
+                  </span> */}
                 </h3>
 
                 {!collapsedRooms[room] && (

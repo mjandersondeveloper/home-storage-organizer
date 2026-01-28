@@ -110,7 +110,6 @@
 }
 
 .room-title:hover {
-  /* transform: translateY(-1px) scale(1.03); */
   color: #d6ddff;
   letter-spacing: 0.3px;
 }
@@ -144,7 +143,7 @@
 }
 
 .chevron.collapsed {
-  transform: rotate(0deg);
+  transform: rotate(270deg);
 }
 
 .chevron:not(.collapsed) {
