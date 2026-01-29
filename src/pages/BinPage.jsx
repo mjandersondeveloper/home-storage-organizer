@@ -45,6 +45,17 @@ export default function BinPage() {
   const getBinUrl = (householdId, binId) =>
   `${window.location.origin}/home-storage-organizer/#/${householdId}/bin/${binId}`;
 
+  const generateNextBinId = (room, bins) => {
+    const prefix = room.toLowerCase().replace(/\s+/g, "-");
+    const existing = Object.keys(bins)
+      .filter(id => id.startsWith(prefix + "-"))
+      .map(id => parseInt(id.split("-").pop(), 10))
+      .filter(n => !isNaN(n));
+
+    const nextNumber = (existing.length ? Math.max(...existing) : 0) + 1;
+    return `${prefix}-${String(nextNumber).padStart(3, "0")}`;
+  };
+  
   const updateBin = async (updatedBin) => {
     setBins(updatedBin);
     setBin(updatedBin[binId]);
@@ -189,12 +200,21 @@ export default function BinPage() {
             className="input"  
             value={bin.room}
             onChange={async (e) => {
-              const updated = {
-                ...bins,
-                [binId]: { ...bin, room: e.target.value },
+              const newRoom = e.target.value;
+              if (newRoom === bin.room) {
+                setEditingRoom(false);
+                return;
+              }
+              const newId = generateNextBinId(newRoom, bins);
+              const updatedBins = { ...bins };
+
+              delete updatedBins[binId];
+              updatedBins[newId] = {
+                ...bin,
+                room: newRoom,
               };
-              await updateBin(updated);
-              setEditingRoom(false);
+              await saveAllBins(updatedBins);
+              window.location.hash = `#/${householdId}/bin/${newId}`;
             }}
             onBlur={() => setEditingRoom(false)}
             autoFocus

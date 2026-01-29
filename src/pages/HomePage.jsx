@@ -9,7 +9,6 @@ import "./css/SearchBar.css";
 export default function HomePage() {
   const [bins, setBins] = useState({});
   const [newBinName, setNewBinName] = useState("");
-  const [newBinId, setNewBinId] = useState("");
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [newBinRoom, setNewBinRoom] = useState("");
@@ -31,19 +30,11 @@ export default function HomePage() {
  const filteredBinsWithMatches = Object.entries(bins)
   .map(([id, bin]) => {
     const term = searchTerm.toLowerCase();
-
-    // All items that match the search
     const allMatchingItems = bin.items.filter((item) =>
       item.toLowerCase().includes(term)
     );
-
-    // Show only first 5 matching items
     const matchingItems = allMatchingItems.slice(0, 5);
-
-    // Number of additional matching items
     const extraMatchesCount = allMatchingItems.length - matchingItems.length;
-
-    // Determine if bin matches at all
     const binMatchesSearch =
       id.toLowerCase().includes(term) ||
       bin.name.toLowerCase().includes(term) ||
@@ -74,26 +65,34 @@ export default function HomePage() {
     }));
   };
 
+  const generateNextBinId = (room, bins) => {
+    const prefix = room.toLowerCase().replace(/\s+/g, "-");
+    const existing = Object.keys(bins)
+      .filter(id => id.startsWith(prefix + "-"))
+      .map(id => parseInt(id.split("-").pop(), 10))
+      .filter(n => !isNaN(n));
+
+    const nextNumber = (existing.length ? Math.max(...existing) : 0) + 1;
+    return `${prefix}-${String(nextNumber).padStart(3, "0")}`;
+  };
+
   const createBin = async () => {
     const name = newBinName.trim();
-    const id = newBinId.trim();
-    if (!name || !id || !newBinRoom) {
-      alert("Please enter both a Bin Name, Bin ID, and Room.");
-      return;
-    }
-    if (bins[id]) {
-      alert("Bin ID already exists! Please choose another.");
+    const room = newBinRoom;
+
+    if (!name || !room) {
+      alert("Please enter both a Bin Name and Room.");
       return;
     }
 
+    const id = generateNextBinId(room, bins);
     const updatedBin = {
       ...bins,
-      [id]: { name, room: newBinRoom, items: [] },
+      [id]: { name, room, items: [] },
     };
 
     setBins(updatedBin);
     setNewBinName("");
-    setNewBinId("");
     setNewBinRoom("");
     await saveAllBins(updatedBin);
   };
@@ -113,12 +112,6 @@ export default function HomePage() {
             placeholder="Bin Name"
             value={newBinName}
             onChange={(e) => setNewBinName(e.target.value)}
-            className="input"
-          />
-          <input
-            placeholder="Bin ID (must be unique)"
-            value={newBinId}
-            onChange={(e) => setNewBinId(e.target.value)}
             className="input"
           />
           <select
@@ -182,7 +175,6 @@ export default function HomePage() {
                         <Link to={`${householdId}/bin/${id}`} className="bin-link bin-link-with-preview">
                           <div className="bin-header">
                             <span className="bin-name">{bin.name}</span>
-                            {/* <span className="bin-id">({id})</span> */}
                           </div>
 
                           {searchTerm && matchingItems.length > 0 && (
