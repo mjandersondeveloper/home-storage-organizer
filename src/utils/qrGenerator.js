@@ -1,5 +1,45 @@
 import QRCode from "qrcode";
 import jsPDF from "jspdf";
+import JSZip from "jszip";
+
+export async function downloadSingleQRAsPNG(label, url) {
+  const canvas = await generateStyledQrCanvas(label, url);
+  const link = document.createElement("a");
+  const safeName = (label)
+    .replace(/[^a-z0-9]/gi, "_")
+    .toLowerCase();
+
+  link.download = `${safeName}-qr.png`;
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+}
+
+export async function downloadAllQRCodesAsPNG(bins, householdId) {
+  const zip = new JSZip();
+  const folder = zip.folder("bin-qr-codes");
+
+  for (const [id, bin] of Object.entries(bins)) {
+    const url = `${window.location.origin}/home-storage-organizer/#/${householdId}/bin/${id}`;
+    const canvas = await generateStyledQrCanvas(bin.name, url);
+
+    const blob = await canvasToBlob(canvas);
+
+    const safeName = bin.name
+      .replace(/[^a-z0-9]/gi, "_")
+      .toLowerCase();
+
+    folder.file(`${safeName}-qr.png`, blob);
+  }
+
+  const zipBlob = await zip.generateAsync({ type: "blob" });
+
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(zipBlob);
+  link.download = "bin-qr-codes.zip";
+  link.click();
+
+  URL.revokeObjectURL(link.href);
+}
 
 export async function downloadSingleQRAsPDF(label, url) {
   const canvas = await generateStyledQrCanvas(label, url);
@@ -25,7 +65,7 @@ export async function downloadSingleQRAsPDF(label, url) {
   pdf.save(`${safeName}-qr.pdf`);
 }
 
-export async function downloadQRCodesAsPDF(bins) {
+export async function downloadQRCodesAsPDF(bins, householdId) {
   const pdf = new jsPDF("portrait", "pt", "letter");
 
   const pageWidth = pdf.internal.pageSize.getWidth();
@@ -39,7 +79,7 @@ export async function downloadQRCodesAsPDF(bins) {
     if (!first) pdf.addPage();
     first = false;
 
-    const url = `${window.location.origin}/home-storage-organizer/#/bin/${id}`;
+    const url = `${window.location.origin}/home-storage-organizer/#/${householdId}/bin/${id}`;
     const canvas = await generateStyledQrCanvas(bin.name, url);
     const imgData = canvas.toDataURL("image/png");
 
@@ -56,7 +96,7 @@ export async function downloadQRCodesAsPDF(bins) {
   pdf.save("bin-qr-codes.pdf");
 }
 
-export async function downloadQRCodesAsPDFGrid(bins) {
+export async function downloadQRCodesAsPDFGrid(bins, householdId) {
   const pdf = new jsPDF("portrait", "pt", "letter");
 
   const pageWidth = pdf.internal.pageSize.getWidth();
@@ -70,7 +110,7 @@ export async function downloadQRCodesAsPDFGrid(bins) {
   let y = margin;
 
   for (const [id, bin] of Object.entries(bins)) {
-    const url = `${window.location.origin}/home-storage-organizer/#/bin/${id}`;
+    const url = `${window.location.origin}/home-storage-organizer/#/${householdId}/bin/${id}`;
     const canvas = await generateStyledQrCanvas(bin.name, url);
     const imgData = canvas.toDataURL("image/png");
 
@@ -120,11 +160,29 @@ export async function generateStyledQrCanvas(label, url) {
   const borderRadius = 20;
   const dividerSpacing = 35;
   const textTopSpacing = 80;
-  const textHeight = 40;
   const bottomPadding = 40;
-
   const width = size + padding * 2;
-  const height = size + padding * 2 + dividerSpacing + textTopSpacing + textHeight + bottomPadding;
+
+  // Temporary canvas just for measuring text
+  const tempCanvas = document.createElement("canvas");
+  const tempCtx = tempCanvas.getContext("2d");
+
+  tempCtx.font = `600 80px "Segoe UI Rounded", system-ui, sans-serif`;
+
+  const maxTextWidth = width - 120;
+  const lineHeight = 90;
+
+  const lines = wrapText(tempCtx, label, maxTextWidth);
+
+  const dynamicTextHeight = lines.length * lineHeight;
+
+  const height =
+    size +
+    padding * 2 +
+    dividerSpacing +
+    textTopSpacing +
+    dynamicTextHeight +
+    bottomPadding;
 
   const canvas = document.createElement("canvas");
   canvas.width = width;
@@ -171,7 +229,16 @@ export async function generateStyledQrCanvas(label, url) {
   ctx.font = `600 80px "Segoe UI Rounded", system-ui, sans-serif`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText(label, width / 2, dividerY + textTopSpacing + textHeight / 2);
+
+  // Draw each line centered
+  lines.forEach((line, i) => {
+    const y =
+      dividerY +
+      textTopSpacing +
+      i * lineHeight;
+
+    ctx.fillText(line, width / 2, y);
+  });
 
   return canvas;
 }
@@ -180,4 +247,26 @@ export async function canvasToBlob(canvas) {
   return new Promise((resolve) => {
     canvas.toBlob(resolve, "image/png");
   });
+}
+
+function wrapText(ctx, text, maxWidth) {
+  const words = text.split(" ");
+  const lines = [];
+  let currentLine = "";
+
+  for (const word of words) {
+    const testLine = currentLine ? currentLine + " " + word : word;
+    const { width } = ctx.measureText(testLine);
+
+    if (width > maxWidth && currentLine) {
+      lines.push(currentLine);
+      currentLine = word;
+    } else {
+      currentLine = testLine;
+    }
+  }
+
+  if (currentLine) lines.push(currentLine);
+
+  return lines;
 }

@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getAllBins, saveAllBins } from "../api/binStorage";
-import { downloadSingleQRAsPDF } from "../utils/qrGenerator";
+import { downloadSingleQRAsPNG } from "../utils/qrGenerator";
 import Loading from "../components/Loading";
 import "./css/BinPage.css";
 import "./css/SearchBar.css";
 
 export default function BinPage() {
-  const { binId } = useParams();
+  const { householdId, binId } = useParams();  
   const [bins, setBins] = useState({});
   const [bin, setBin] = useState(null);
   const [newItem, setNewItem] = useState("");
@@ -15,6 +15,10 @@ export default function BinPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [editingIndex, setEditingIndex] = useState(null);
   const [editValue, setEditValue] = useState("");
+  const [editingBinName, setEditingBinName] = useState(false);
+  const [binNameValue, setBinNameValue] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [editingRoom, setEditingRoom] = useState(false);
 
   useEffect(() => { 
     async function fetchBins() {
@@ -38,9 +42,20 @@ export default function BinPage() {
     );
   }
 
-  const getBinUrl = (binId) =>
-  `${window.location.origin}/home-storage-organizer/#/bin/${binId}`;
+  const getBinUrl = (householdId, binId) =>
+  `${window.location.origin}/home-storage-organizer/#/${householdId}/bin/${binId}`;
 
+  const generateNextBinId = (room, bins) => {
+    const prefix = room.toLowerCase().replace(/\s+/g, "-");
+    const existing = Object.keys(bins)
+      .filter(id => id.startsWith(prefix + "-"))
+      .map(id => parseInt(id.split("-").pop(), 10))
+      .filter(n => !isNaN(n));
+
+    const nextNumber = (existing.length ? Math.max(...existing) : 0) + 1;
+    return `${prefix}-${String(nextNumber).padStart(3, "0")}`;
+  };
+  
   const updateBin = async (updatedBin) => {
     setBins(updatedBin);
     setBin(updatedBin[binId]);
@@ -81,12 +96,39 @@ export default function BinPage() {
     setEditingIndex(null);
     setEditValue("");
     await updateBin(updatedBin);
-  }
+  };
 
   const cancelEditedItem = () => {
     setEditingIndex(null);
     setEditValue("");
   }
+
+  const saveEditedBinName = async () => {
+    const text = binNameValue.trim();
+    if (!text) return;
+
+    const updatedBins = {
+      ...bins,
+      [binId]: { ...bin, name: text }
+    };
+
+    setEditingBinName(false);
+    setBinNameValue("");
+    await updateBin(updatedBins);
+  };
+
+  const cancelEditedBinName = () => {
+    setEditingBinName(false);
+    setBinNameValue("");
+  };
+
+  const deleteBin = async () => {
+    const updatedBins = { ...bins };
+    delete updatedBins[binId];
+
+    await saveAllBins(updatedBins);
+    window.location.hash = "#/";
+  };
 
   const filteredItems = bin.items.filter((item) =>
     item.toLowerCase().includes(searchTerm.toLowerCase())
@@ -98,11 +140,109 @@ export default function BinPage() {
         <Link to="/" className="home-link">🏠 Home</Link>
       </div>
 
-      <h2 className="bin-title">{bin.name}</h2>
+      {editingBinName ? (
+        <div className="edit-row">
+          <input
+            value={binNameValue}
+            onChange={(e) => setBinNameValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") saveEditedBinName();
+            }}
+            onBlur={cancelEditedBinName}
+            autoFocus
+            className="edit-input"
+          />
+
+          <button className="save-btn" onMouseDown={(e) => e.preventDefault()} onClick={saveEditedBinName}>✓</button>
+          <button className="cancel-btn" onMouseDown={(e) => e.preventDefault()} onClick={cancelEditedBinName}>✕</button>
+        </div>
+      ) : (
+        <div className="item-row">
+          <h2 className="bin-title">{bin.name}</h2>
+          
+          <div className="item-actions">
+            <button
+              className="edit-btn"
+              onClick={() => {
+                setEditingBinName(true);
+                setBinNameValue(bin.name);
+              }}>Edit</button>
+
+            <button
+              className="remove-btn"
+              onClick={() => setShowDeleteModal(true)}>Remove</button>
+          </div>
+          
+          {showDeleteModal && (
+            <div className="modal-overlay">
+              <div className="modal-card">
+                <h3>Are you sure?</h3>
+                <p>This will permanently remove "{bin.name}" and all its items.</p>
+
+                <div className="item-actions">
+                  <button className="cancel-modal-btn" onClick={() => setShowDeleteModal(false)}>
+                    Cancel
+                  </button>
+
+                  <button className="remove-btn" onClick={deleteBin}>
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>          
+      )}
+
+      <div className="item-row">
+        {editingRoom ? (
+          <select
+            className="input"  
+            value={bin.room}
+            onChange={async (e) => {
+              const newRoom = e.target.value;
+              if (newRoom === bin.room) {
+                setEditingRoom(false);
+                return;
+              }
+              const newId = generateNextBinId(newRoom, bins);
+              const updatedBins = { ...bins };
+
+              delete updatedBins[binId];
+              updatedBins[newId] = {
+                ...bin,
+                room: newRoom,
+              };
+              await saveAllBins(updatedBins);
+              window.location.hash = `#/${householdId}/bin/${newId}`;
+            }}
+            onBlur={() => setEditingRoom(false)}
+            autoFocus
+          >
+            <option>Basement</option>
+            <option>Garage</option>
+            <option>Kitchen</option>
+            <option>Bedroom</option>
+            <option>Living Room</option>
+            <option>Office</option>
+            <option>Attic</option>
+            <option>Other</option>
+          </select>
+        ) : (
+          <span
+            className="room-pill"
+            onClick={() => setEditingRoom(true)}
+            style={{ cursor: "pointer" }}
+            title="Click to edit room"
+          >
+            {bin.room}
+          </span>
+        )}
+      </div>
 
       <div className="qr-area">
         <button
-          onClick={() => downloadSingleQRAsPDF(bin.name, getBinUrl(binId))}
+          onClick={() => downloadSingleQRAsPNG(bin.name, getBinUrl(householdId, binId))}
           className="btn download-btn"
         >
           ⬇️ Download QR Code

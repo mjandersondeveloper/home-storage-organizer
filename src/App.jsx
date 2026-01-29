@@ -10,7 +10,7 @@ export default function App() {
       <HashRouter>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/bin/:binId" element={<BinPage />} />
+          <Route path="/:householdId/bin/:binId" element={<BinPage />} />
         </Routes>
       </HashRouter>
     </div>

@@ -24,7 +24,6 @@
   text-align: center;
   margin-bottom: 20px;
   display: flex;
-  flex-direction: column;
   align-items: center;
 }
 
@@ -80,6 +79,7 @@ width: 100%;
 .item-actions {
   display: flex;
   gap: 10px;
+  margin-bottom: auto;
 }
 
 /* ---------- Action Pills (Edit / Remove / Save / Cancel) ---------- */
@@ -87,7 +87,8 @@ width: 100%;
 .edit-btn,
 .remove-btn,
 .save-btn,
-.cancel-btn {
+.cancel-btn,
+.cancel-modal-btn {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
   cursor: pointer;
@@ -98,10 +99,15 @@ width: 100%;
 }
 
 /* Individual colors */
-.edit-btn { color: #4dabf7; }
-.remove-btn { color: #ff6b6b; }
+.edit-btn,
+.cancel-modal-btn { 
+  color: #4dabf7; 
+}
+.remove-btn,
+.cancel-btn  { 
+  color: #ff6b6b; 
+}
 .save-btn { color: #51cf66; }
-.cancel-btn { color: #ffa94d; }
 
 /* Hover states */
 .edit-btn:hover {
@@ -117,14 +123,19 @@ width: 100%;
 }
 
 .cancel-btn:hover {
-  background: rgba(255, 169, 77, 0.12);
+  background: rgba(255, 107, 107, 0.12);
+}
+
+.cancel-modal-btn:hover {
+  background: rgba(77, 171, 247, 0.12);
 }
 
 /* Pressed feedback */
 .edit-btn:active,
 .remove-btn:active,
 .save-btn:active,
-.cancel-btn:active {
+.cancel-btn:active,
+.cancel-modal-btn:active {
   transform: scale(0.96);
 }
 
@@ -176,4 +187,46 @@ width: 100%;
   color: white;
   font-weight: 600;
   cursor: pointer;
+}
+
+/* ---------- Modal ---------- */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-card {
+  background: #0f1113;
+  padding: 20px;
+  border-radius: 14px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+
+.modal-card h3 {
+  margin-top: 0;
+}
+
+.modal-card p {
+  color: #bbb;
+}
+
+/* ---------- Room Pill ---------- */
+
+.room-pill {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 4px 10px;
+  font-size: 14px;
+  border-radius: 999px;
+  background: #2a2f3a;
+  color: #cdd6ff;
+  width: fit-content;
 }
