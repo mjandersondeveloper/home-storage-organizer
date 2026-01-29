@@ -1,5 +1,45 @@
 import QRCode from "qrcode";
 import jsPDF from "jspdf";
+import JSZip from "jszip";
+
+export async function downloadSingleQRAsPNG(label, url) {
+  const canvas = await generateStyledQrCanvas(label, url);
+  const link = document.createElement("a");
+  const safeName = (label)
+    .replace(/[^a-z0-9]/gi, "_")
+    .toLowerCase();
+
+  link.download = `${safeName}-qr.png`;
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+}
+
+export async function downloadAllQRCodesAsPNG(bins, householdId) {
+  const zip = new JSZip();
+  const folder = zip.folder("bin-qr-codes");
+
+  for (const [id, bin] of Object.entries(bins)) {
+    const url = `${window.location.origin}/home-storage-organizer/#/${householdId}/bin/${id}`;
+    const canvas = await generateStyledQrCanvas(bin.name, url);
+
+    const blob = await canvasToBlob(canvas);
+
+    const safeName = bin.name
+      .replace(/[^a-z0-9]/gi, "_")
+      .toLowerCase();
+
+    folder.file(`${safeName}-qr.png`, blob);
+  }
+
+  const zipBlob = await zip.generateAsync({ type: "blob" });
+
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(zipBlob);
+  link.download = "bin-qr-codes.zip";
+  link.click();
+
+  URL.revokeObjectURL(link.href);
+}
 
 export async function downloadSingleQRAsPDF(label, url) {
   const canvas = await generateStyledQrCanvas(label, url);
@@ -25,7 +65,7 @@ export async function downloadSingleQRAsPDF(label, url) {
   pdf.save(`${safeName}-qr.pdf`);
 }
 
-export async function downloadQRCodesAsPDF(bins) {
+export async function downloadQRCodesAsPDF(bins, householdId) {
   const pdf = new jsPDF("portrait", "pt", "letter");
 
   const pageWidth = pdf.internal.pageSize.getWidth();
@@ -39,7 +79,7 @@ export async function downloadQRCodesAsPDF(bins) {
     if (!first) pdf.addPage();
     first = false;
 
-    const url = `${window.location.origin}/home-storage-organizer/#/bin/${id}`;
+    const url = `${window.location.origin}/home-storage-organizer/#/${householdId}/bin/${id}`;
     const canvas = await generateStyledQrCanvas(bin.name, url);
     const imgData = canvas.toDataURL("image/png");
 
@@ -56,7 +96,7 @@ export async function downloadQRCodesAsPDF(bins) {
   pdf.save("bin-qr-codes.pdf");
 }
 
-export async function downloadQRCodesAsPDFGrid(bins) {
+export async function downloadQRCodesAsPDFGrid(bins, householdId) {
   const pdf = new jsPDF("portrait", "pt", "letter");
 
   const pageWidth = pdf.internal.pageSize.getWidth();
@@ -70,7 +110,7 @@ export async function downloadQRCodesAsPDFGrid(bins) {
   let y = margin;
 
   for (const [id, bin] of Object.entries(bins)) {
-    const url = `${window.location.origin}/home-storage-organizer/#/bin/${id}`;
+    const url = `${window.location.origin}/home-storage-organizer/#/${householdId}/bin/${id}`;
     const canvas = await generateStyledQrCanvas(bin.name, url);
     const imgData = canvas.toDataURL("image/png");
 

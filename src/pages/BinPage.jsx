@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getAllBins, saveAllBins } from "../api/binStorage";
-import { downloadSingleQRAsPDF } from "../utils/qrGenerator";
+import { downloadSingleQRAsPNG } from "../utils/qrGenerator";
 import Loading from "../components/Loading";
 import "./css/BinPage.css";
 import "./css/SearchBar.css";
@@ -242,7 +242,7 @@ export default function BinPage() {
 
       <div className="qr-area">
         <button
-          onClick={() => downloadSingleQRAsPDF(bin.name, getBinUrl(householdId, binId))}
+          onClick={() => downloadSingleQRAsPNG(bin.name, getBinUrl(householdId, binId))}
           className="btn download-btn"
         >
           ⬇️ Download QR Code
