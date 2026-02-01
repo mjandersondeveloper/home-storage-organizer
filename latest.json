@@ -15,7 +15,7 @@
         "Red printed table runner",
         "Gnome salt and pepper shakers"
       ],
-      "room": "Kitchen"
+      "room": "Basement"
     },
     "basement-002": {
       "name": "Christmas Decorations 2",
@@ -146,7 +146,7 @@
       "items": [
         "Easter decorations"
       ],
-      "room": "Garage"
+      "room": "Basement"
     },
     "basement-015": {
       "name": "Random Memory Items",
@@ -189,7 +189,7 @@
         "Mini muffin tin",
         "Regular muffin tin"
       ],
-      "room": "Kitchen"
+      "room": "Basement"
     },
     "basement-020": {
       "name": "Craft Supplies",
@@ -204,7 +204,7 @@
         "Square/rectangle canvases",
         "Paint brushes"
       ],
-      "room": "Office"
+      "room": "Basement"
     },
     "basement-021": {
       "name": "Hosting Bin 2",
