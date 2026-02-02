@@ -135,7 +135,6 @@ export async function downloadQRCodesAsPDFGrid(bins, householdId) {
 
     x += renderWidth + gap;
   }
-
   pdf.save("bin-qr-codes-grid.pdf");
 }
 
