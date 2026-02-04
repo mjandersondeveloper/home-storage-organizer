@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getAllBins, saveAllBins } from "../api/binStorage";
-import { downloadSingleQRAsPNG } from "../utils/qrGenerator";
+import { downloadSingleQRAsPNG, downloadSingleQRAsPDF } from "../utils/qrGenerator";
 import Loading from "../components/Loading";
+import QRCodeDownloadModal from "../components/QRCodeDownloadModal";
 import "./css/BinPage.css";
 import "./css/SearchBar.css";
 
@@ -19,6 +20,10 @@ export default function BinPage() {
   const [binNameValue, setBinNameValue] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [editingRoom, setEditingRoom] = useState(false);
+  const [selectedItems, setSelectedItems] = useState(new Set());
+  const [targetBinId, setTargetBinId] = useState("");
+  const [showQRModal, setShowQRModal] = useState(false);
+
 
   useEffect(() => { 
     async function fetchBins() {
@@ -129,6 +134,39 @@ export default function BinPage() {
     await saveAllBins(updatedBins);
     window.location.hash = "#/";
   };
+
+  const toggleItemSelection = (index) => {
+    const updated = new Set(selectedItems);
+    if (updated.has(index)) {
+      updated.delete(index);
+    } else {
+      updated.add(index);
+    }
+    setSelectedItems(updated);
+  };
+
+  const transferSelectedItems = async () => {
+    if (!targetBinId || selectedItems.size === 0) return;
+
+    const itemsToMove = Array.from(selectedItems).map(i => bin.items[i]);
+    const updatedSourceItems = bin.items.filter(
+      (_, index) => !selectedItems.has(index)
+    );
+
+    const updatedBins = {
+      ...bins,
+      [binId]: { ...bin, items: updatedSourceItems },
+      [targetBinId]: {
+        ...bins[targetBinId],
+        items: [...bins[targetBinId].items, ...itemsToMove],
+      },
+    };
+
+    setSelectedItems(new Set());
+    setTargetBinId("");
+    await updateBin(updatedBins);
+  };
+
 
   const filteredItems = bin.items.filter((item) =>
     item.toLowerCase().includes(searchTerm.toLowerCase())
@@ -242,7 +280,7 @@ export default function BinPage() {
 
       <div className="qr-area">
         <button
-          onClick={() => downloadSingleQRAsPNG(bin.name, getBinUrl(householdId, binId))}
+          onClick={() => setShowQRModal(true)}
           className="btn download-btn"
         >
           ⬇️ Download QR Code
@@ -265,6 +303,35 @@ export default function BinPage() {
           </button>
         )}
       </div>
+
+      {selectedItems.size > 0 && (
+        <div className="item-row transfer-bar">
+          <span>{selectedItems.size} selected</span>
+
+          <select
+            className="input"
+            value={targetBinId}
+            onChange={(e) => setTargetBinId(e.target.value)}
+          >
+            <option value="">Move to bin…</option>
+            {Object.entries(bins)
+              .filter(([id]) => id !== binId)
+              .map(([id, b]) => (
+                <option key={id} value={id}>
+                  {b.name} ({b.room})
+                </option>
+              ))}
+          </select>
+
+          <button
+            className="btn"
+            disabled={!targetBinId}
+            onClick={transferSelectedItems}
+          >
+            Transfer
+          </button>
+        </div>
+      )}
 
       {filteredItems.length === 0 ? (
         <p className="no-items">
@@ -294,6 +361,12 @@ export default function BinPage() {
                   </div>
                 ) : (
                   <div className="item-row">
+                    <input
+                      type="checkbox"
+                      checked={selectedItems.has(realIndex)}
+                      onChange={() => toggleItemSelection(realIndex)}
+                    />
+
                     <span className="item-text">{item}</span>
 
                     <div className="item-actions">
@@ -323,6 +396,30 @@ export default function BinPage() {
         />
         <button onClick={addItem} className="btn">Add</button>
       </div>
+
+      <QRCodeDownloadModal
+        open={showQRModal}
+        onClose={() => setShowQRModal(false)}
+        title="Download QR Code"
+        options={[
+          {
+            label: "Download as PNG",
+            onClick: () =>
+              downloadSingleQRAsPNG(
+                bin.name,
+                getBinUrl(householdId, binId)
+              )
+          },
+          {
+            label: "Download as PDF",
+            onClick: () =>
+              downloadSingleQRAsPDF(
+                bin.name,
+                getBinUrl(householdId, binId)
+              )
+          }
+        ]}
+      />
     </div>
   );
 }
