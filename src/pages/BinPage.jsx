@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getAllBins, saveAllBins } from "../api/binStorage";
-import { downloadSingleQRAsPNG } from "../utils/qrGenerator";
+import { downloadSingleQRAsPNG, downloadSingleQRAsPDF } from "../utils/qrGenerator";
 import Loading from "../components/Loading";
+import QRCodeDownloadModal from "../components/QRCodeDownloadModal";
 import "./css/BinPage.css";
 import "./css/SearchBar.css";
 
@@ -21,6 +22,7 @@ export default function BinPage() {
   const [editingRoom, setEditingRoom] = useState(false);
   const [selectedItems, setSelectedItems] = useState(new Set());
   const [targetBinId, setTargetBinId] = useState("");
+  const [showQRModal, setShowQRModal] = useState(false);
 
 
   useEffect(() => { 
@@ -278,7 +280,7 @@ export default function BinPage() {
 
       <div className="qr-area">
         <button
-          onClick={() => downloadSingleQRAsPNG(bin.name, getBinUrl(householdId, binId))}
+          onClick={() => setShowQRModal(true)}
           className="btn download-btn"
         >
           ⬇️ Download QR Code
@@ -394,6 +396,30 @@ export default function BinPage() {
         />
         <button onClick={addItem} className="btn">Add</button>
       </div>
+
+      <QRCodeDownloadModal
+        open={showQRModal}
+        onClose={() => setShowQRModal(false)}
+        title="Download QR Code"
+        options={[
+          {
+            label: "Download as PNG",
+            onClick: () =>
+              downloadSingleQRAsPNG(
+                bin.name,
+                getBinUrl(householdId, binId)
+              )
+          },
+          {
+            label: "Download as PDF",
+            onClick: () =>
+              downloadSingleQRAsPDF(
+                bin.name,
+                getBinUrl(householdId, binId)
+              )
+          }
+        ]}
+      />
     </div>
   );
 }

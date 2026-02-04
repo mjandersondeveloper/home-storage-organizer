@@ -65,7 +65,7 @@ export async function downloadSingleQRAsPDF(label, url) {
   pdf.save(`${safeName}-qr.pdf`);
 }
 
-export async function downloadQRCodesAsPDF(bins, householdId) {
+export async function downloadAllQRCodesAsSinglePagePDF(bins, householdId) {
   const pdf = new jsPDF("portrait", "pt", "letter");
 
   const pageWidth = pdf.internal.pageSize.getWidth();
@@ -96,18 +96,20 @@ export async function downloadQRCodesAsPDF(bins, householdId) {
   pdf.save("bin-qr-codes.pdf");
 }
 
-export async function downloadQRCodesAsPDFGrid(bins, householdId) {
+export async function downloadAllQRCodesTwoPerPagePDF(bins, householdId) {
   const pdf = new jsPDF("portrait", "pt", "letter");
 
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
 
   const margin = 50;
-  const gap = 30;
-  const targetWidth = 260;
+  const gap = 40;
 
-  let x = margin;
-  let y = margin;
+  const usableHeight = pageHeight - margin * 2 - gap;
+  const slotHeight = usableHeight / 2;
+  const slotWidth = pageWidth - margin * 2;
+
+  let slotIndex = 0;
 
   for (const [id, bin] of Object.entries(bins)) {
     const url = `${window.location.origin}/home-storage-organizer/#/${householdId}/bin/${id}`;
@@ -115,27 +117,34 @@ export async function downloadQRCodesAsPDFGrid(bins, householdId) {
     const imgData = canvas.toDataURL("image/png");
 
     const aspect = canvas.height / canvas.width;
-    const renderWidth = targetWidth;
-    const renderHeight = renderWidth * aspect;
 
-    // New row
-    if (x + renderWidth > pageWidth - margin) {
-      x = margin;
-      y += renderHeight + gap;
+    // Fit QR inside slot
+    let renderWidth = slotWidth;
+    let renderHeight = renderWidth * aspect;
+
+    if (renderHeight > slotHeight) {
+      renderHeight = slotHeight;
+      renderWidth = renderHeight / aspect;
     }
 
-    // New page
-    if (y + renderHeight > pageHeight - margin) {
-      pdf.addPage();
-      x = margin;
-      y = margin;
-    }
+    const x = (pageWidth - renderWidth) / 2;
+    const y =
+      margin +
+      slotIndex * (slotHeight + gap) +
+      (slotHeight - renderHeight) / 2;
 
     pdf.addImage(imgData, "PNG", x, y, renderWidth, renderHeight);
 
-    x += renderWidth + gap;
+    slotIndex++;
+
+    // New page after 2 QRs
+    if (slotIndex === 2) {
+      pdf.addPage();
+      slotIndex = 0;
+    }
   }
-  pdf.save("bin-qr-codes-grid.pdf");
+
+  pdf.save("bin-qr-codes-2-per-page.pdf");
 }
 
 export async function generateStyledQrCanvas(label, url) {

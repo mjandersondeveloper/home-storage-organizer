@@ -1,0 +1,16 @@
+.qr-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.qr-options .btn {
+  width: 100%;
+}
+
+@media (min-width: 600px) {
+  .qr-options {
+    flex-direction: row;
+  }
+}

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getAllBins, saveAllBins } from "../api/binStorage";
-import { downloadAllQRCodesAsPNG } from "../utils/qrGenerator";
+import { downloadAllQRCodesAsPNG, downloadAllQRCodesTwoPerPagePDF } from "../utils/qrGenerator";
 import Loading from "../components/Loading";
+import QRCodeDownloadModal from "../components/QRCodeDownloadModal";
 import "./css/HomePage.css";
 import "./css/SearchBar.css";
 
@@ -13,6 +14,7 @@ export default function HomePage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [newBinRoom, setNewBinRoom] = useState("");
   const [collapsedRooms, setCollapsedRooms] = useState({});
+  const [showQRModal, setShowQRModal] = useState(false);
   const householdId = "worman-drive"; // Static household ID for now
 
   useEffect(() => {
@@ -101,7 +103,9 @@ export default function HomePage() {
     <div className="home-page">
       <h2>🗂️ All Bins</h2>
 
-      <button className="btn" onClick={() => downloadAllQRCodesAsPNG(bins, householdId)}>
+      <button 
+        className="btn" 
+        onClick={() => setShowQRModal(true)}>
         ⬇️ Download All QR Codes
       </button>
 
@@ -201,6 +205,22 @@ export default function HomePage() {
             ))}
         </div>
       )}
+
+      <QRCodeDownloadModal
+        open={showQRModal}
+        onClose={() => setShowQRModal(false)}
+        title="Download QR Codes"
+        options={[
+          {
+            label: "Download all as PNG (ZIP)",
+            onClick: () => downloadAllQRCodesAsPNG(bins, householdId)
+          },
+          {
+            label: "Download all as PDF",
+            onClick: () => downloadAllQRCodesTwoPerPagePDF(bins, householdId)
+          }
+        ]}
+      />
     </div>
   );
 }
