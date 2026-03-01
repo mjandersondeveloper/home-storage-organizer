@@ -159,14 +159,18 @@
       "name": "Ocean Gear",
       "items": [
         "Snorkel gear",
-        "Water ball"
+        "Water ball",
+        "Beach blanket"
       ],
       "room": "Basement"
     },
     "basement-017": {
       "name": "Spare Tools and Materials",
       "items": [
-        "Miscellaneous tools and materials"
+        "Miscellaneous tools and materials",
+        "Tealight set",
+        "Hand warmers",
+        "Toe warmers"
       ],
       "room": "Basement"
     },
@@ -181,13 +185,13 @@
     "basement-019": {
       "name": "Appliances",
       "items": [
-        "Toaster (backup)",
         "Rocket blender",
         "Big crockpot",
         "Small crockpot",
         "Glass deep dish",
         "Mini muffin tin",
-        "Regular muffin tin"
+        "Regular muffin tin",
+        "Toaster (backup)"
       ],
       "room": "Basement"
     },
