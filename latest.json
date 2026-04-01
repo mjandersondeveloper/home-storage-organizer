@@ -268,6 +268,16 @@
         "Cocktail smoker"
       ],
       "room": "Basement"
+    },
+    "basement-026": {
+      "name": "Old Sheets and Rags",
+      "room": "Basement",
+      "items": [
+        "Old blankets",
+        "Old sheets",
+        "Old towels",
+        "Old rags"
+      ]
     }
   }
 }
