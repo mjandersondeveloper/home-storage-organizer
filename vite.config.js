@@ -15,7 +15,7 @@ export default defineConfig({
         short_name: 'Home Storage Organizer',
         description: 'Organize home storage with bins, QR codes, and offline access.',
         theme_color: '#2563eb',
-        background_color: '#ffffff',
+        background_color: '#111827',
         display: 'standalone',
         start_url: '/home-storage-organizer/',
         icons: [
