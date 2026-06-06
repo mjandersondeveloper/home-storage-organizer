@@ -9,7 +9,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
-      includeAssets: ['vite.svg', 'icon-192x192.png', 'icon-512x512.png', 'favicon.svg'],
+      includeAssets: ['vite.svg', 'favicon.svg', 'icon.png', 'icon-192x192.png', 'icon-512x512.png'],
       manifest: {
         name: 'Home Storage Organizer',
         short_name: 'Home Storage Organizer',
