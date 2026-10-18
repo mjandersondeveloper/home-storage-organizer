@@ -1,11 +1,11 @@
 # Home Storage Organizer
 
-A small React + Vite app to manage named "bins" of household items. Create bins, add/remove items, and persist data to a remote JSON store.
+A small React + Vite app to manage named "bins" of household items. Create bins, add/remove items, and persist data in Firebase Realtime Database.
 
 ## Features
 - Create and list bins (each has a user-defined ID and name)
 - Add and remove items from a bin
-- Persistent storage via a remote JSON bin (see `src/api/binStorage.js`)
+- Persistent storage via Firebase Realtime Database (see `src/api/binStorage.js`)
 - Minimal, Vite-powered React app with `react-router` for navigation
 
 ## Quick Start
@@ -41,7 +41,7 @@ Available scripts (from `package.json`):
 
 ## Data Persistence
 
-Persistent data is handled in `src/api/binStorage.js`. The file calls a JSON storage endpoint (jsonbin.io) with an embedded `BIN_ID` and `API_KEY`.
+Persistent data is handled in `src/api/binStorage.js` and stored at `/bins` in Firebase Realtime Database. Copy `.env.example` to `.env.local` and fill in the Firebase web app values for local development.
 
 Functions:
 - `getAllBins()` — fetches the stored bins object
@@ -52,11 +52,13 @@ Stored data shape:
 ```json
 {
   "bins": {
-    "binId1": { "name": "Shoes", "items": ["left shoe", "right shoe"] },
-    "binId2": { "name": "Tools", "items": ["hammer"] }
+    "basement-001": { "name": "Seasonal decor", "room": "Basement", "items": ["wreath"] },
+    "garage-001": { "name": "Tools", "room": "Garage", "items": ["hammer"] }
   }
 }
 ```
+
+The Firebase configuration uses `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_DATABASE_URL`, `VITE_FIREBASE_PROJECT_ID`, and `VITE_FIREBASE_APP_ID`.
 
 ## Project Structure (high level)
 

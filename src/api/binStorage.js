@@ -1,26 +1,14 @@
-const BIN_ID = "6963224d43b1c97be927fbb8";
-const API_KEY = "$2a$10$d8TPiCQ7ZVmSGw5RN2SZIeS9wTCTNotoiCINY2yG1LS7gf7rwUvPO";
+import { get, ref, set } from "firebase/database";
+import { database } from "./firebase";
+import { normalizeBins } from "./binData";
 
-const BASE_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+const binsRef = ref(database, "bins");
 
 export async function getAllBins() {
-  const res = await fetch(BASE_URL, {
-    headers: {
-      "X-Master-Key": API_KEY
-    }
-  });
-
-  const data = await res.json();
-  return data.record.bins;
+  const snapshot = await get(binsRef);
+  return normalizeBins(snapshot.exists() ? snapshot.val() : {});
 }
 
 export async function saveAllBins(bins) {
-  await fetch(BASE_URL, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Master-Key": API_KEY
-    },
-    body: JSON.stringify({ bins })
-  });
+  await set(binsRef, normalizeBins(bins));
 }
