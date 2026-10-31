@@ -24,10 +24,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Run lint
         run: npm run lint
@@ -43,10 +42,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Run unit tests
         run: npm test
@@ -62,10 +60,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Build app
         run: npm run build
